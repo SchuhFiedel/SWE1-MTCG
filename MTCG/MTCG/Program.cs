@@ -1,4 +1,5 @@
 ﻿using System;
+using MTCG.Cards;
 
 namespace MTCG
 {
@@ -7,6 +8,12 @@ namespace MTCG
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+
+            Hurricane card = new Hurricane();
+            card.attack();
+
+            Console.ReadKey();
+
         }
     }
 }

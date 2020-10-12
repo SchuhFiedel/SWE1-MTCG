@@ -19,34 +19,20 @@ namespace MTCG.Cards
     ///     
     /// </summary>
 
-    abstract class Card : ICardType, IElementType
+    abstract public class Card 
     {
-        protected ICardType attackBehaviour = null;
-        protected IElementType elementBehaviour = null;
-        int damage;
-        string name;
-        string descr;
-        int creatureType;
+        string cardType = null;
 
-        public void attack()
+
+
+        public Card(string cardType)
         {
-            attackBehaviour.attack();
+            if (cardType == "spell")
+            {
+                this.cardType = cardType;
+            }
         }
 
-        public void element()
-        {
-            elementBehaviour.element();
-        }
-
-        public void setCardType(ICardType cardType)
-        {
-            attackBehaviour = cardType;
-        }
-
-        public void setElementType(IElementType elementType)
-        {
-            elementBehaviour = elementType;
-        }
     }
 
 

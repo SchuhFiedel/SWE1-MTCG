@@ -4,8 +4,8 @@ using System.Text;
 
 namespace MTCG.Cards
 {
-    interface ICardType
+    public interface ICardType
     {
-       void attack();
+        void attack();
     }
 }
