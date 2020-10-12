@@ -21,7 +21,7 @@ namespace Test
             int value2 = 25;
 
             int actualValue = calc.xPlusY(value1, value2);
-            int expectedVal = 25;
+            int expectedVal = 17+25;
 
             Assert.AreEqual(expectedVal, actualValue);
         }
