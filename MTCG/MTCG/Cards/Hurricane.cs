@@ -4,12 +4,9 @@ using System.Text;
 
 namespace MTCG.Cards
 {
-    public class Hurricane : Spell, ICardType//, IElementType
+    public class Hurricane : Spell
     {
-        public new void attack()
-        {
-            base.attack();
-        }
+
         
     }
 }

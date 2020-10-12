@@ -19,18 +19,31 @@ namespace MTCG.Cards
     ///     
     /// </summary>
 
-    abstract public class Card 
+    abstract public class Card : ICardType, IElementType
     {
         string cardType = null;
+        string elementType = null;
+        string cardName = null;
 
 
-
-        public Card(string cardType)
+        public Card(string cardType, string cardName)
         {
             if (cardType == "spell")
             {
                 this.cardType = cardType;
+                this.cardName = cardName;
             }
+        }
+
+        public Card attack(Card other)
+        {
+            Console.WriteLine(other);
+            return other;
+        }
+
+        public void attack()
+        {
+            Console.WriteLine("I DID THE SPELL!");
         }
 
     }

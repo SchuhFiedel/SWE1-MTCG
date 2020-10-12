@@ -5,11 +5,16 @@ using System.Text;
 
 namespace MTCG.Cards 
 {
-    class Monster : ICardType
+    public class Monster : Card
     {
-        public void attack()
+        /*public void attack()
         {
             Console.WriteLine("I DID THE ATTACK!");
+        }*/
+
+        public Monster() : base("Monster", "Monster")
+        {
+
         }
     }
 }

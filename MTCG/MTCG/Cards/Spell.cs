@@ -6,15 +6,14 @@ namespace MTCG.Cards
 {
     public class Spell : Card
     {
-        public void attack()
-        {
-            Console.WriteLine("I DID THE SPELL!");
-        }
+        
 
-        public Spell() : base("spell")
+        public Spell() : base("spell", "spell")
         {
 
         }
+
+        
 
     }
 }

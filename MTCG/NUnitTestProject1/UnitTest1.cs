@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.IO;
 using MTCG;
+using MTCG.Cards;
 
 namespace Test
 {
@@ -13,6 +14,7 @@ namespace Test
         {
         }
 
+        /*
         [Test]
         public void Test1()
         {
@@ -24,6 +26,23 @@ namespace Test
             int expectedVal = 17+25;
 
             Assert.AreEqual(expectedVal, actualValue);
+        }*/
+
+        [Test]
+        public void Test2()
+        {
+            Card hur1 = new Hurricane();
+            Card hur2 = new Hurricane();
+            hur1.attack(hur2);
+            Assert.Pass();
+        }
+        [Test]
+        public void Test3()
+        {
+            Card hur1 = new Hurricane();
+            Card mon = new Monster();
+            hur1.attack(mon);
+            Assert.Pass();
         }
     }
 }

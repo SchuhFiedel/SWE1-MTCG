@@ -9,8 +9,12 @@ namespace MTCG
         {
             Console.WriteLine("Hello World!");
 
-            Hurricane card = new Hurricane();
-            card.attack();
+            Card card = new Hurricane();
+            Card card2 = new Hurricane();
+            Card card3 = new Monster();
+            card.attack(card2);
+            
+            Console.WriteLine(card2.attack(card3));
 
             Console.ReadKey();
 

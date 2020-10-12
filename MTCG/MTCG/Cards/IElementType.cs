@@ -6,6 +6,6 @@ namespace MTCG.Cards
 {
     interface IElementType
     {
-        void element();
+        
     }
 }
