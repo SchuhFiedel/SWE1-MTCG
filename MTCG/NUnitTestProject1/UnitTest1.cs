@@ -1,7 +1,7 @@
-using NUnit.Framework;
 using System;
 using System.IO;
 using MTCG;
+using NUnit.Framework;
 using MTCG.Cards;
 using Moq;
 
@@ -23,7 +23,7 @@ namespace Test
             //var combat = new Combat(mockedA.Object, mockedB.Object);
         }
 
-        /*
+        
         [Test]
         public void Test1()
         {
@@ -35,22 +35,20 @@ namespace Test
             int expectedVal = 17+25;
 
             Assert.AreEqual(expectedVal, actualValue);
-        }*/
+        }
 
         [Test]
-        public void Test2()
+        public void HurricaneTest()
         {
             Card hur1 = new Hurricane();
-            Card hur2 = new Hurricane();
-            hur1.attack(hur2);
-            Assert.Pass();
+            string name = "Hurricane";
+            string actual = hur1.GetName();
+            Assert.AreEqual(name, actual);
         }
         [Test]
         public void Test3()
         {
             Card hur1 = new Hurricane();
-            Card mon = new Monster();
-            hur1.attack(mon);
             Assert.Pass();
         }
     }

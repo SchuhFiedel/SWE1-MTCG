@@ -50,6 +50,11 @@ namespace MTCG.Cards
             return other;
         }
 
+        public string GetName()
+        {
+            return this.cardName;
+        }
+
     }
 
 

@@ -11,8 +11,8 @@ namespace MTCG
 
             Card card = new Hurricane();
             Card card2 = new Hurricane();
-            
-            //card.attack(card2);
+
+            Console.WriteLine(card);
 
             Console.ReadKey();
 
