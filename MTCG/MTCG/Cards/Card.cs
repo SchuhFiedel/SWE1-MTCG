@@ -5,45 +5,49 @@ using System.Text;
 namespace MTCG.Cards
 {
     /// <summary>
-    /// PLS NOTE THAT THESE ARE ONLY GUIDELINES.
-    /// THEY MAY VARY FROM COMPANY TO COMPANY!
+    ///
+    /// Monster cards: Cards with active attacks and damage based on an element type. The element type does not affect pure monster fights.
     /// 
-    /// - Use pascal casing for members (fields and methods)
-    /// - Keep your variables in order: 
-    ///     declare all member variables at the top of a class, with static variables at the very top
-    ///     first public, then private
-    /// - group by type
-    ///     const/static/readonly
-    ///     properties
-    ///     class variables
-    ///     
-    /// </summary>
+    /// Spell cards: Cards can attack with an element based spell which either:
+    ///        - is effective
+    ///        - is not effective
+    ///        - has no effect
+    ///
+    /// Specials: 
+    ///     - Goblins are afraid of Dragons -> Goblin can not attack Dragon
+    ///     - Wizzards can control Orks -> orc can not attack wizzard
+    ///     - Knight armor is so heavy that they drown -> Knight dies instantly through water spell
+    ///     - Kraken is immune against spells
+    ///     - FireElves know Dragons -> Dragons can not attack FireElves
+    ///</summary>
 
-    abstract public class Card : ICardType, IElementType
+
+    abstract public class Card //: ICardType, IElementType
     {
-        string cardType = null;
-        string elementType = null;
-        string cardName = null;
+        CardTypes cardType;
+        ElementTypes elementType;
+        SpecialType specialType;
+        string cardName;
+        int healthPoints;
+        int attackPoints;
+        int defensePoints;
+        
 
-
-        public Card(string cardType, string cardName)
+        public Card(string newCardName, CardTypes newCardType, ElementTypes newElement, SpecialType newSpecial, int maxHP, int maxAP, int maxDP)
         {
-            if (cardType == "spell")
-            {
-                this.cardType = cardType;
-                this.cardName = cardName;
-            }
+            this.cardType = newCardType;
+            this.cardName = newCardName;
+            this.elementType = newElement;
+            this.specialType = newSpecial;
+            this.healthPoints = maxHP;
+            this.attackPoints = maxAP;
+            this.defensePoints = maxDP;
         }
 
-        public Card attack(Card other)
+        public Card Attack(Card other)
         {
-            Console.WriteLine(other);
+            Console.WriteLine("Attacking: " + other);
             return other;
-        }
-
-        public void attack()
-        {
-            Console.WriteLine("I DID THE SPELL!");
         }
 
     }

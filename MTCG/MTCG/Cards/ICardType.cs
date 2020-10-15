@@ -6,6 +6,6 @@ namespace MTCG.Cards
 {
     public interface ICardType
     {
-        void attack();
+        //void attack(Card other);
     }
 }
