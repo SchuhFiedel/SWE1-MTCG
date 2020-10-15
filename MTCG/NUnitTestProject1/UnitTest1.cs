@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using MTCG;
 using MTCG.Cards;
+using Moq;
 
 namespace Test
 {
@@ -12,6 +13,14 @@ namespace Test
         [SetUp]
         public void Setup()
         {
+        }
+
+        [Test]
+        public void TestMoq()
+        {
+            var mockedA = new Mock<ICardType>();
+            var mockedB = new Mock<ICardType>();
+            //var combat = new Combat(mockedA.Object, mockedB.Object);
         }
 
         /*
