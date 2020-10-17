@@ -42,14 +42,21 @@ namespace Test
         {
             Card hur1 = new Hurricane();
             string name = "Hurricane";
-            string actual = hur1.GetName();
+            string actual = hur1.GetCardName();
             Assert.AreEqual(name, actual);
         }
+
         [Test]
-        public void Test3()
+        public void AttackTest()
         {
             Card hur1 = new Hurricane();
-            Assert.Pass();
+            Card hran1 = new Hransig();
+            // 25 +10 - 20
+            int expected = hran1.GetHP() - hur1.GetAP() + hran1.GetDP();
+            int actual = hur1.Attack(hran1).GetHP();
+            
+
+            Assert.AreEqual(expected, actual);
         }
     }
 }

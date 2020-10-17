@@ -31,9 +31,9 @@ namespace MTCG.Cards
         int healthPoints;
         int attackPoints;
         int defensePoints;
-        
+        bool piercing;
 
-        public Card(string newCardName, CardTypes newCardType, ElementTypes newElement, SpecialType newSpecial, int maxHP, int maxAP, int maxDP)
+        public Card(string newCardName, CardTypes newCardType, ElementTypes newElement, SpecialType newSpecial, int maxHP, int maxAP, int maxDP, bool newPiercing)
         {
             this.cardType = newCardType;
             this.cardName = newCardName;
@@ -42,20 +42,63 @@ namespace MTCG.Cards
             this.healthPoints = maxHP;
             this.attackPoints = maxAP;
             this.defensePoints = maxDP;
+            this.piercing = newPiercing;
         }
 
+        //get functions
+        public ElementTypes GetElementType() { return elementType; }
+        public CardTypes GetCardType() { return cardType; }
+        public SpecialType getSpecial() { return specialType; }
+        public string GetCardName() { return cardName; }
+        public int GetHP() { return healthPoints; }
+        public int GetAP() { return attackPoints; }
+        public int GetDP() { return defensePoints; }
+        public bool GetPiercing() { return piercing; }
+
+
+        //other functions
         public Card Attack(Card other)
         {
             Console.WriteLine("Attacking: " + other);
+            other.TakeDamage(this, false);
             return other;
         }
 
-        public string GetName()
+        public void TakeDamage(Card attacker, bool piercing)
         {
-            return this.cardName;
+            int remAP;
+            if (piercing == true)
+            {
+                remAP = attacker.attackPoints;
+            }
+            else
+            {
+                //DEFENDING ACTION
+                (this.defensePoints, remAP) = this.Defend(attacker.attackPoints, this.defensePoints);
+            }
+
+            int HP = this.healthPoints - remAP;
+
+            if (HP <= 0)
+            {
+                this.healthPoints = 0;
+            }
+            else
+            {
+                this.healthPoints = HP;
+            }
+            
         }
 
+        (int, int) Defend(int attackerAP, int defenderDP)
+        {
+            int remAP = attackerAP - defenderDP;
+            int remDP = defenderDP - attackerAP;
+
+            if (remAP <= 0) remAP = 0;
+            if (remDP <= 0) remDP = 0;
+
+            return (remDP, remAP);
+        }
     }
-
-
 }
