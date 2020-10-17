@@ -1,5 +1,6 @@
 ﻿using System;
 using MTCG.Cards;
+using MTCG.Util;
 
 namespace MTCG
 {
@@ -16,6 +17,12 @@ namespace MTCG
             card.Attack(card2);
             Console.WriteLine("Hransig HP : " + card2.GetHP());
 
+            MySqlDataClass db = new MySqlDataClass();
+            string queryString = "";
+            while (queryString != ".") {
+                queryString = Console.ReadLine();
+                if (queryString != ".") { db.runQuery(queryString); };
+            }
             Console.ReadKey();
 
         }
