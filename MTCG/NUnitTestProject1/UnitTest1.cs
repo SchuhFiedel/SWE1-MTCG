@@ -1,9 +1,12 @@
 using System;
 using System.IO;
-using MTCG;
+using System.Collections.Generic;
 using NUnit.Framework;
-using MTCG.Cards;
 using Moq;
+using MTCG;
+using MTCG.Cards;
+using MTCG.Util;
+
 
 namespace Test
 {
@@ -57,6 +60,20 @@ namespace Test
             
 
             Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void dbGetCardsTest()
+        {
+            MySqlDataClass db = new MySqlDataClass();
+            List<Card> cardList = new List<Card>();
+            cardList = db.getCardsFromDB();
+            Console.WriteLine();
+
+            string expOne = "Hurricane";
+            string actOne = cardList[0].GetCardName();
+
+            Assert.AreEqual(expOne, actOne);
         }
     }
 }

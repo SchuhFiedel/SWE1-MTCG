@@ -14,10 +14,6 @@ namespace MTCG
             /*
             Card card = new Hurricane();
             Card card2 = new Hransig();
-
-            Console.WriteLine("Hransig HP : " + card2.GetHP());
-            card.Attack(card2);
-            Console.WriteLine("Hransig HP : " + card2.GetHP());
             */
 
             MySqlDataClass db = new MySqlDataClass();
@@ -30,7 +26,11 @@ namespace MTCG
                 Console.WriteLine(cardList[i].GetCardName() + " |Card Type: " + cardList[i].GetCardType() + " |Piercing Damage: " + cardList[i].GetPiercing());
                 Console.WriteLine();
             }
-            
+
+            Console.WriteLine("Hransig HP : " + cardList[1].GetHP());
+            cardList[0].Attack(cardList[1]);
+            Console.WriteLine("Hransig HP : " + cardList[1].GetHP());
+
 
             /*
             MySqlDataClass db = new MySqlDataClass();
