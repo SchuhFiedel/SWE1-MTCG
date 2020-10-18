@@ -6,7 +6,7 @@ namespace MTCG.Cards
 {
     public class Hransig : Card
     {
-        public Hransig() : base("Hransig", CardTypes.Monster, ElementTypes.Earth, SpecialType.Ork, 25, 5, 10, true)
+        public Hransig() : base(1, "Hransig", "INFO" ,CardTypes.Monster, ElementTypes.Earth, SpecialTypes.Ork, 25, 5, 10, true)
         {
 
         }

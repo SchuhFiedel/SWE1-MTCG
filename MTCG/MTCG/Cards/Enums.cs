@@ -6,7 +6,7 @@ namespace MTCG.Cards
 {
     public enum CardTypes
     {
-        Spell,
+        Spell = 0,
         Monster
     }
 
@@ -23,7 +23,7 @@ namespace MTCG.Cards
 
     public enum ElementTypes
     {
-        Normal,
+        Normal = 0,
         Fire,
         Water,
         Ice,
@@ -42,9 +42,9 @@ namespace MTCG.Cards
     /// Ork -> can not attack Wizzard
     /// </summary>
     
-    public enum SpecialType
+    public enum SpecialTypes
     {
-        None,
+        None = 0,
         Dragon,
         Goblin,
         Knight,

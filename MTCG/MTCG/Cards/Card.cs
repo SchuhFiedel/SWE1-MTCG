@@ -22,21 +22,27 @@ namespace MTCG.Cards
     ///</summary>
 
 
-    abstract public class Card //: ICardType, IElementType
+    //abstract 
+    public class Card //: ICardType, IElementType
     {
+        
         CardTypes cardType;
         ElementTypes elementType;
-        SpecialType specialType;
+        SpecialTypes specialType;
         string cardName;
+        string cardInfo;
         int healthPoints;
         int attackPoints;
         int defensePoints;
+        int cardID;
         bool piercing;
 
-        public Card(string newCardName, CardTypes newCardType, ElementTypes newElement, SpecialType newSpecial, int maxHP, int maxAP, int maxDP, bool newPiercing)
+        public Card(int newCardID,string newCardName, string newCardInfo, CardTypes newCardType, ElementTypes newElement, SpecialTypes newSpecial, int maxHP, int maxAP, int maxDP, bool newPiercing)
         {
+            this.cardID = newCardID;
             this.cardType = newCardType;
             this.cardName = newCardName;
+            this.cardInfo = newCardInfo;
             this.elementType = newElement;
             this.specialType = newSpecial;
             this.healthPoints = maxHP;
@@ -48,7 +54,7 @@ namespace MTCG.Cards
         //get functions
         public ElementTypes GetElementType() { return elementType; }
         public CardTypes GetCardType() { return cardType; }
-        public SpecialType getSpecial() { return specialType; }
+        public SpecialTypes getSpecial() { return specialType; }
         public string GetCardName() { return cardName; }
         public int GetHP() { return healthPoints; }
         public int GetAP() { return attackPoints; }
@@ -59,7 +65,7 @@ namespace MTCG.Cards
         //other functions
         public Card Attack(Card other)
         {
-            Console.WriteLine("Attacking: " + other);
+            Console.WriteLine("Attacking: " + other.GetCardName());
             other.TakeDamage(this, false);
             return other;
         }

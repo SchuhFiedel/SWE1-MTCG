@@ -7,7 +7,7 @@ namespace MTCG.Cards
     public class Hurricane : Card
     {
 
-        public Hurricane() : base("Hurricane", CardTypes.Spell, ElementTypes.Air, SpecialType.None, 0, 20, 0, false)
+        public Hurricane() : base(2, "Hurricane", "INFO", CardTypes.Spell, ElementTypes.Air, SpecialTypes.None, 0, 20, 0, false)
         {
 
         }

@@ -12,10 +12,15 @@ namespace MTCG.Util
     {
         public MySqlConnection databaseConnection;
 
+        public MySqlDataClass()
+        {
+            setConnect();
+        }
+
         public void setConnect()
         {
-            string mySQLConnectionString = "datasource=127.0.0.1;port=3306; username=root;password=;database=test;";
-            MySqlConnection databaseConnection = new MySqlConnection(mySQLConnectionString);
+            string mySQLConnectionString = "datasource=127.0.0.1;port=3306; username=root;password=;database=mtcg;";
+            databaseConnection = new MySqlConnection(mySQLConnectionString);
         }
 
         public void runQuery(string queryToRun)
@@ -50,10 +55,11 @@ namespace MTCG.Util
         {
             // TO DO
 
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
 
             List<Card> cards = new List<Card>();
             string query = "SELECT * FROM cards;";
+            Console.WriteLine(query);
 
             MySqlCommand commandDatabase = new MySqlCommand(query, databaseConnection);
             commandDatabase.CommandTimeout = 60;
@@ -61,7 +67,8 @@ namespace MTCG.Util
             {
                 databaseConnection.Open();
                 MySqlDataReader myReader = commandDatabase.ExecuteReader();
-
+                Console.WriteLine(myReader);
+                
                 if (myReader.HasRows)
                 {
                     Console.WriteLine("Query Generated result:");
@@ -71,19 +78,22 @@ namespace MTCG.Util
                         //string newCardName, CardTypes newCardType, ElementTypes newElement, SpecialType newSpecial, int maxHP, int maxAP, int maxDP, bool newPiercing
                         //Console.WriteLine(myReader.GetValue(0).GetType() + " - " + myReader.GetString(1).GetType() + " - " + myReader.GetString(2).GetType() + " - " + myReader.GetValue(3).GetType());
                         //id                        //firstname                         //givename                          //cardid
-                        //Console.WriteLine(myReader.GetValue(0) + " - " + myReader.GetString(1) + " - " + myReader.GetString(2) + " - " + myReader.GetValue(3));
+                        Console.WriteLine(myReader.GetValue(0) + " - " + myReader.GetString(1) + " - " + myReader.GetString(2) + " - " + myReader.GetValue(3) + " - " + myReader.GetValue(4) + " - " + myReader.GetValue(5) + " - " + myReader.GetValue(6) + " - " + myReader.GetValue(7) + " - " + myReader.GetValue(8) + " - " + myReader.GetValue(9));
+                        Card tmp = new Card((int)myReader.GetValue(0), (string)myReader.GetString(1), (string)myReader.GetString(2), (CardTypes)Convert.ToInt32(myReader.GetValue(3)), (ElementTypes)Convert.ToInt32(myReader.GetValue(4)), (SpecialTypes)(int)myReader.GetValue(5), (int)myReader.GetValue(6), (int)myReader.GetValue(7), (int)myReader.GetValue(8), Convert.ToBoolean(myReader.GetValue(9)));
+                        cards.Add(tmp);
                     }
                 }
                 else
                 {
                     Console.WriteLine("Query Successfully executed!");
                 }
-
+                
             }
             catch (Exception e)
             {
                 Console.WriteLine("Query Error: " + e.Message);
             }
+
             return cards;
         }
 
