@@ -10,15 +10,11 @@ namespace MTCG
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            /*
-            Card card = new Hurricane();
-            Card card2 = new Hransig();
-            */
+            //Console.WriteLine("Hello World!");
 
             MySqlDataClass db = new MySqlDataClass();
             List<Card> cardList = new List<Card>();
-            cardList = db.getCardsFromDB();
+            cardList = db.getAllCardsFromDB();
             Console.WriteLine();
 
             for (int i = 0; i < cardList.Count; i++)
@@ -32,14 +28,6 @@ namespace MTCG
             Console.WriteLine("Hransig HP : " + cardList[1].GetHP());
 
 
-            /*
-            MySqlDataClass db = new MySqlDataClass();
-            string queryString = "";
-            while (queryString != ".") {
-                queryString = Console.ReadLine();
-                if (queryString != ".") { db.runQuery(queryString); };
-            }
-            */
             Console.ReadKey();
             
         }

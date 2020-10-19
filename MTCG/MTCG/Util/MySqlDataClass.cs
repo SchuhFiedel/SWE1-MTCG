@@ -14,11 +14,6 @@ namespace MTCG.Util
 
         public MySqlDataClass()
         {
-            setConnect();
-        }
-
-        public void setConnect()
-        {
             string mySQLConnectionString = "datasource=127.0.0.1;port=3306; username=root;password=;database=mtcg;";
             databaseConnection = new MySqlConnection(mySQLConnectionString);
         }
@@ -51,12 +46,8 @@ namespace MTCG.Util
             }
         }
 
-        public List<Card> getCardsFromDB()
+        public List<Card> getAllCardsFromDB()
         {
-            // TO DO
-
-            //throw new NotImplementedException();
-
             List<Card> cards = new List<Card>();
             string query = "SELECT * FROM cards;";
             Console.WriteLine(query);
@@ -87,14 +78,17 @@ namespace MTCG.Util
                 {
                     Console.WriteLine("Query Successfully executed!");
                 }
-                
             }
             catch (Exception e)
             {
                 Console.WriteLine("Query Error: " + e.Message);
             }
-
             return cards;
+        }
+
+        public List<Card> getUserCards()
+        {
+            throw new NotImplementedException() ;
         }
 
     }

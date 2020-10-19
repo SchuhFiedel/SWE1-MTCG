@@ -13,20 +13,16 @@ namespace Test
     [TestFixture]
     public class Tests
     {
+        List<Card> cardList = new List<Card>();
+
         [SetUp]
         public void Setup()
         {
+            MySqlDataClass db = new MySqlDataClass();
+            cardList = db.getAllCardsFromDB();
         }
 
-        [Test]
-        public void TestMoq()
-        {
-            var mockedA = new Mock<ICardType>();
-            var mockedB = new Mock<ICardType>();
-            //var combat = new Combat(mockedA.Object, mockedB.Object);
-        }
-
-        
+        /*
         [Test]
         public void Test1()
         {
@@ -48,9 +44,11 @@ namespace Test
             string actual = hur1.GetCardName();
             Assert.AreEqual(name, actual);
         }
+        */
+
 
         [Test]
-        public void AttackTest()
+        public void AttackTest_Hurricane_Hransig()
         {
             Card hur1 = new Hurricane();
             Card hran1 = new Hransig();
@@ -65,15 +63,47 @@ namespace Test
         [Test]
         public void dbGetCardsTest()
         {
-            MySqlDataClass db = new MySqlDataClass();
-            List<Card> cardList = new List<Card>();
-            cardList = db.getCardsFromDB();
-            Console.WriteLine();
-
             string expOne = "Hurricane";
             string actOne = cardList[0].GetCardName();
-
             Assert.AreEqual(expOne, actOne);
+        }
+
+        [Test]
+        public void DBAttackTest_Hurricane_Hransig()
+        {
+            int expected = cardList[1].GetHP() - cardList[0].GetAP() + cardList[1].GetDP();
+            cardList[0].Attack(cardList[1]);
+            int actual = cardList[1].GetHP();
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void DBAttackTest_PercingDMG()
+        {
+            int expected;
+            if(cardList[1].GetHP() - cardList[2].GetAP() >= 0)
+            {
+                expected = cardList[1].GetHP() - cardList[2].GetAP();
+            }
+            else { expected = 0; }
+
+
+            cardList[2].Attack(cardList[1]);
+            int actual = cardList[1].GetHP();
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void DBAttackTest_ElementBuff()
+        {
+            int expected = (cardList[1].GetHP() + cardList[1].GetDP() - (int)(cardList[3].GetAP() * 1.5));
+
+            cardList[3].Attack(cardList[1]);
+            int actual = cardList[1].GetHP();
+
+            Assert.AreEqual(expected, actual);
         }
     }
 }
