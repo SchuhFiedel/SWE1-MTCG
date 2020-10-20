@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using MTCG;
 
-namespace Client
+namespace Client2
 {
     public class Program
     {
