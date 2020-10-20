@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using MTCG;
 
-namespace Client2
+namespace Client
 {
     public class Program
     {
@@ -18,6 +18,12 @@ namespace Client2
                 while (true)
                 {
                     string message = Console.ReadLine();
+                    if (message == "0")
+                    {
+                        stream.Close();
+                        client.Close();
+                        break;
+                    }
                     // Translate the Message into ASCII.
                     Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
                     // Send the message to the connected TcpServer. 
@@ -31,15 +37,14 @@ namespace Client2
                     response = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
                     Console.WriteLine("Received: {0}", response);
                     Thread.Sleep(2);
+                                 
                 }
-                stream.Close();
-                client.Close();
             }
             catch (Exception e)
             {
                 Console.WriteLine("Exception: {0}", e);
             }
-            Console.Read();
+            //Console.Read();
         }
     }
 }

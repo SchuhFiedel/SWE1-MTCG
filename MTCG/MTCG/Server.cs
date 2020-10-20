@@ -15,7 +15,7 @@ namespace MTCG.Server
         {
             IPAddress localAddr = IPAddress.Parse(ip);
             server = new TcpListener(localAddr, port);
-            server.Start(2);
+            server.Start(1);
             StartListener();
         }
         public void StartListener()
