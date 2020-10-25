@@ -14,14 +14,14 @@ namespace MTCG.Server
         {
             Console.WriteLine("Hello World!");
 
-            List<Thread> clients = new List<Thread>();
-            Thread t = new Thread(delegate ()
-            {
+            //List<Thread> clients = new List<Thread>();
+            //Thread t = new Thread(delegate ()
+           // {
                 Server myserver = new Server("127.0.0.1", 8000);
                 
-            });
-            t.Start();
-            clients.Add(t);
+            //});
+            //t.Start();
+            //clients.Add(t);
 
             Console.WriteLine("Server Started...!");
             
