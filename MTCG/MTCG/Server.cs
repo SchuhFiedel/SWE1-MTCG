@@ -77,7 +77,7 @@ namespace MTCG.Server
             Byte[] reply = Encoding.ASCII.GetBytes(answerString);
             stream.Write(reply, 0, reply.Length);
             stream.Flush();
-            Console.WriteLine("{1}: Sent: {0}", answerString, Thread.CurrentThread.ManagedThreadId);
+            Console.WriteLine("{1}: Sent:\n {0}", answerString, Thread.CurrentThread.ManagedThreadId);
         }
     }
 }

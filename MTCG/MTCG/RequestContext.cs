@@ -16,6 +16,14 @@ namespace MTCG.Server
             StringReader reader = new StringReader(data);
             string[] messageLines = data.Split('\n');
 
+            /*
+            foreach (string x in messageLines)
+            {
+                Console.WriteLine(x);
+            }
+            Console.WriteLine("\n\n\r\r");
+            */
+
             string[] tokens = messageLines[0].Split(' ');
 
             string request = tokens[0];
