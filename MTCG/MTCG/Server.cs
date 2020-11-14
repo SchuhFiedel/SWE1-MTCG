@@ -5,7 +5,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Collections.Generic;
-using MTCG.Server;
 
 namespace MTCG.Server
 {
@@ -21,6 +20,8 @@ namespace MTCG.Server
             server.Start(1);
             StartListener();
         }
+        
+
 
         public void StartListener()
         {

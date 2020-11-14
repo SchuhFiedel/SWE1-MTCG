@@ -1,28 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Web;
+
 
 
 namespace MTCG.Server
 {
-    class RequestContext
+    public class RequestContext
     {
         public string Context(string data, List<string> messages)
         {
             StringReader reader = new StringReader(data);
             string[] messageLines = data.Split('\n');
-
-            /*
-            foreach (string x in messageLines)
-            {
-                Console.WriteLine(x);
-            }
-            Console.WriteLine("\n\n\r\r");
-            */
 
             string[] tokens = messageLines[0].Split(' ');
 
@@ -46,7 +35,7 @@ namespace MTCG.Server
                         string allMsg = "";
                         int counter = 0;
                         foreach (string x in messages){
-                            allMsg += counter + "\n";
+                            allMsg += counter + ": " + x +  "\n";
                             counter++;
                         }
                         response = "ALL MESSAGES:\n " + allMsg;
@@ -59,7 +48,7 @@ namespace MTCG.Server
                         if (messages.Count > Int32.Parse(tokens[2])){
                             //change message
                             messages[Int32.Parse(tokens[2])] = messageLines[messageLines.Length-1];
-                            response = "Changed " + tokens[2] + " + " + messageLines[messageLines.Length - 1];
+                            response = "Changed " + tokens[2] + ": " + messageLines[messageLines.Length - 1];
                         }else{
                             response = "Change not possible - Message ID does not exist!";
                         }

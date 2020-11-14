@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Net.Http;
@@ -10,20 +9,19 @@ namespace Client
 {
     public class Program
     {
-        public static async Task Main (string[] args)
+        public static void Main ()
         {
             Int32 port = 8000;
             string address = "127.0.0.1";
             string uri = "http://" + address + ":" + port;
             //string altUri = "https://httpbin.org/";
-            HttpClient client = new HttpClient();
+            //HttpClient client = new HttpClient();
 
             
             TcpClient t_client = new TcpClient(address, port);
             NetworkStream stream = t_client.GetStream();
-            //t_client.Client.
 
-            string input;
+            string input = string.Empty;
 
             do
             {
@@ -35,6 +33,7 @@ namespace Client
                     case "EXIT":
                         Console.WriteLine("Ending Program!");
                         //HttpRequest("EXIT", uri, stream);
+                        t_client.Close();
                         break;
                     case "1":
                         Console.WriteLine("Get ALL Messages!");
@@ -70,15 +69,17 @@ namespace Client
                         break;
                 }
 
-                // Bytes Array to receive Server Response.
-                Byte[] data = new Byte[256];
-                String response = String.Empty;
-                // Read the Tcp Server Response Bytes.
-                Int32 bytes = stream.Read(data, 0, data.Length);
-                response = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-                Console.WriteLine("Received: {0}", response);
-                //Thread.Sleep(2);
-
+                if (t_client.Connected)
+                {
+                    // Bytes Array to receive Server Response.
+                    Byte[] data = new Byte[200000];
+                    String response = String.Empty;
+                    // Read the Tcp Server Response Bytes.
+                    Int32 bytes = stream.Read(data, 0, data.Length);
+                    response = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+                    Console.WriteLine("Received: {0}", response);
+                    //Thread.Sleep(2);
+                }
 
             } while(input != "EXIT");
             Console.ReadKey();
@@ -87,6 +88,7 @@ namespace Client
 
         public static void PrintMenu()
         {
+            
             Console.WriteLine("\n\n");
             Console.WriteLine("***************************************************************************");
             Console.WriteLine("1) Get all messages");
