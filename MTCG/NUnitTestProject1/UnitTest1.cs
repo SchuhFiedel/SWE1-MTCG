@@ -65,9 +65,9 @@ namespace Test
         [Test]
         public void dbGetCardsTest()
         {
-            MySqlDataClass db = new MySqlDataClass();
+            PostgreSqlClass db = new PostgreSqlClass();
             List<Card> cardList = new List<Card>();
-            cardList = db.getCardsFromDB();
+            cardList = db.GetCardsFromDB();
             Console.WriteLine();
 
             string expOne = "Hurricane";
