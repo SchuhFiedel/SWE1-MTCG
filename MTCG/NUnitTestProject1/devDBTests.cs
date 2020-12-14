@@ -11,15 +11,15 @@ using MTCG.Util;
 namespace Test
 {
     [TestFixture]
-    public class Tests
+    public class devDBTests
     {
         List<Card> cardList = new List<Card>();
 
         [SetUp]
         public void Setup()
         {
-            MySqlDataClass db = new MySqlDataClass();
-            cardList = db.getAllCardsFromDB();
+            PostgreSqlClass db = new PostgreSqlClass();
+            cardList = db.GetCardsFromDB();
         }
 
 

@@ -12,9 +12,9 @@ namespace MTCG
         {
             //Console.WriteLine("Hello World!");
 
-            MySqlDataClass db = new MySqlDataClass();
+            PostgreSqlClass db = new PostgreSqlClass();
             List<Card> cardList = new List<Card>();
-            cardList = db.getAllCardsFromDB();
+            cardList = db.GetCardsFromDB();
             Console.WriteLine();
 
             for (int i = 0; i < cardList.Count; i++)

@@ -11,7 +11,7 @@ using MTCG.Util;
 namespace Test
 {
     [TestFixture]
-    public class Tests
+    public class devFightTests
     {
         [SetUp]
         public void Setup()
@@ -63,7 +63,7 @@ namespace Test
         }
 
         [Test]
-        public void dbGetCardsTest()
+        public void DbGetCardsTest()
         {
             PostgreSqlClass db = new PostgreSqlClass();
             List<Card> cardList = new List<Card>();
