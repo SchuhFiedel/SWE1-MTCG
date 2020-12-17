@@ -1,46 +1,22 @@
 ﻿using System;
+using System.IO;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Text;
-using MTCG.Cards;
-using MTCG.Util;
+//using MTCG.Server;
 
-namespace MTCG
+namespace MTCG.Server
 {
     class Program
     {
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            /*
-            Card card = new Hurricane();
-            Card card2 = new Hransig();
-            */
 
-            MySqlDataClass db = new MySqlDataClass();
-            List<Card> cardList = new List<Card>();
-            cardList = db.getCardsFromDB();
-            Console.WriteLine();
+            Server myserver = new Server("127.0.0.1", 8000);
 
-            for (int i = 0; i < cardList.Count; i++)
-            {
-                Console.WriteLine(cardList[i].GetCardName() + " |Card Type: " + cardList[i].GetCardType() + " |Piercing Damage: " + cardList[i].GetPiercing());
-                Console.WriteLine();
-            }
-
-            Console.WriteLine("Hransig HP : " + cardList[1].GetHP());
-            cardList[0].Attack(cardList[1]);
-            Console.WriteLine("Hransig HP : " + cardList[1].GetHP());
-
-
-            /*
-            MySqlDataClass db = new MySqlDataClass();
-            string queryString = "";
-            while (queryString != ".") {
-                queryString = Console.ReadLine();
-                if (queryString != ".") { db.runQuery(queryString); };
-            }
-            */
-            Console.ReadKey();
+            Console.WriteLine("Server Started...!");
             
         }
     }
