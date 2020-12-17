@@ -151,9 +151,15 @@ namespace Client
                         "\n" + message;
             }
             Byte[] reply = Encoding.ASCII.GetBytes(answerString);
-            stream.Write(reply, 0, reply.Length);
-            stream.Flush();
-            Console.WriteLine("Sent: \n {0}", answerString);
+            try
+            {
+                stream.Write(reply, 0, reply.Length);
+                stream.Flush();
+                Console.WriteLine("Sent: \n {0}", answerString);
+            }
+            catch(System.IO.IOException e) {
+                Console.Write("Server ended connection!");
+            }
         }
     }
 }

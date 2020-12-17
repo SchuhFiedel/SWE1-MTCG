@@ -4,6 +4,8 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using MTCG.Cards;
+using MTCG.Util;
 //using MTCG.Server;
 
 namespace MTCG.Server
@@ -18,7 +20,7 @@ namespace MTCG.Server
             List<Card> cardList = new List<Card>();
             cardList = db.GetCardsFromDB();
             Console.WriteLine();
-            Server myserver = new Server("127.0.0.1", 8000);
+            
 
             for (int i = 0; i < cardList.Count; i++)
             {
@@ -31,9 +33,10 @@ namespace MTCG.Server
             Console.WriteLine("Hransig HP : " + cardList[1].GetHP());
 
 
-            Console.ReadKey();
             Console.WriteLine("Server Started...!");
+            Server myserver = new Server("127.0.0.1", 8000);
             
+            Console.ReadKey();
         }
     }
 }

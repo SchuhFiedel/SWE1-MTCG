@@ -20,17 +20,20 @@ namespace MTCG.Server
             server.Start(1);
             StartListener();
         }
-        
-
 
         public void StartListener()
         {
             try{
-                while (true){
+                while (true) //run until button is pressed
+                {
                     Console.WriteLine("Waiting for a connection..." + Thread.CurrentThread.ManagedThreadId);
                     TcpClient client = server.AcceptTcpClient();
                     Console.WriteLine("Connected!");
                     Thread t = new Thread((HandleDeivce));
+                    if(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)
+                    {
+                        break;
+                    }
                     t.Start(client);
                 }
             }catch (SocketException e){

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Moq;
+//using Moq;
 using MTCG;
 using MTCG.Cards;
 using MTCG.Util;
@@ -21,8 +21,8 @@ namespace Test
         [Test]
         public void TestMoq()
         {
-            var mockedA = new Mock<ICardType>();
-            var mockedB = new Mock<ICardType>();
+            //var mockedA = new Mock<ICardType>();
+            //var mockedB = new Mock<ICardType>();
             //var combat = new Combat(mockedA.Object, mockedB.Object);
         }
 
