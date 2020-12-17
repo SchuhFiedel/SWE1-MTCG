@@ -25,7 +25,7 @@ namespace MTCG.Cards
     //abstract 
     public class Card //: ICardType, IElementType
     {
-        
+        //using ICardType newCardType = new Monster();
         CardTypes cardType;
         ElementTypes elementType;
         SpecialTypes specialType;
@@ -65,37 +65,42 @@ namespace MTCG.Cards
         //other functions
         public Card Attack(Card other)
         {
-            Console.WriteLine("Attacking: " + other.GetCardName());
-            other.TakeDamage(this, false);
+            Console.WriteLine(this.GetCardName() + " is Attacking: " + other.GetCardName());
+            other.TakeDamage(this);
             return other;
         }
 
-        public void TakeDamage(Card attacker, bool piercing)
+        //This card is beeing attacked
+        public void TakeDamage(Card attacker)
         {
-            int remAP;
-            if (piercing == true)
+            double remAP = attacker.GetAP(); // remaining Attack Points
+
+            if (attacker.GetCardType() == CardTypes.Spell)
             {
-                remAP = attacker.attackPoints;
-            }
-            else
-            {
-                //DEFENDING ACTION
-                (this.defensePoints, remAP) = this.Defend(attacker.attackPoints, this.defensePoints);
+                remAP = checkBuffs(remAP, attacker);
+
+                if(this.specialType == SpecialTypes.Knight)
+                {
+                    Console.WriteLine("KNIGHT DIES INStaNTLY");
+                    this.healthPoints = 0;
+                    return;
+                }
             }
 
-            int HP = this.healthPoints - remAP;
+            // Dont deduct attack points because its piercing damage
+            if (attacker.GetPiercing() == false){
+                //DEFENDING ACTION -- deduct dp from ap
+                (this.defensePoints, remAP) = this.Defend((int)remAP, this.defensePoints);
+            } 
 
-            if (HP <= 0)
-            {
-                this.healthPoints = 0;
-            }
-            else
-            {
-                this.healthPoints = HP;
-            }
-            
+            int HP = this.healthPoints - (int)remAP;
+
+            //if HP <  0 set to 0 else set Card.Healthpoints to HP
+            if (HP <= 0){this.healthPoints = 0;}
+            else{this.healthPoints = HP;}
         }
 
+        //DEFENDING ACTION -- deduct dp from ap
         (int, int) Defend(int attackerAP, int defenderDP)
         {
             int remAP = attackerAP - defenderDP;
@@ -106,5 +111,34 @@ namespace MTCG.Cards
 
             return (remDP, remAP);
         }
+
+        double buff(double atp)
+        {
+            return (atp * 1.5);
+        }
+
+        double debuff(double atp)
+        {
+            return (atp * 0.5);
+        }
+
+        double checkBuffs(double atp, Card attacker)
+        {
+            //Buffs
+            if (attacker.GetElementType() == ElementTypes.Water && (this.elementType == ElementTypes.Fire || this.elementType == ElementTypes.Air)) { atp = buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Fire && (this.elementType == ElementTypes.Normal || this.elementType == ElementTypes.Ice)) { atp = buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Normal && (this.elementType == ElementTypes.Water || this.elementType == ElementTypes.Earth)) { atp = buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Earth && (this.elementType == ElementTypes.Fire || this.elementType == ElementTypes.Ice)) { atp = buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Ice && (this.elementType == ElementTypes.Electro || this.elementType == ElementTypes.Air)) { atp = buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Electro && (this.elementType == ElementTypes.Normal || this.elementType == ElementTypes.Earth)) { atp = buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Air && this.elementType == ElementTypes.Electro) { atp = buff(atp); }
+
+            //Debuffs
+            if (attacker.GetElementType() == ElementTypes.Water && this.elementType == ElementTypes.Ice) { atp = debuff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Fire && this.elementType == ElementTypes.Air) { atp = debuff(atp); }
+
+            return atp;
+        }
+
     }
 }

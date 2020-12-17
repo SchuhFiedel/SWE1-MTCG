@@ -11,7 +11,7 @@ using MTCG.Util;
 namespace Test
 {
     [TestFixture]
-    public class Tests
+    public class devFightTests
     {
         [SetUp]
         public void Setup()
@@ -63,11 +63,11 @@ namespace Test
         }
 
         [Test]
-        public void dbGetCardsTest()
+        public void DbGetCardsTest()
         {
-            MySqlDataClass db = new MySqlDataClass();
+            PostgreSqlClass db = new PostgreSqlClass();
             List<Card> cardList = new List<Card>();
-            cardList = db.getCardsFromDB();
+            cardList = db.GetCardsFromDB();
             Console.WriteLine();
 
             string expOne = "Hurricane";

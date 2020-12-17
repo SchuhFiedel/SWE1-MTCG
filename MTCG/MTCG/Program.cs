@@ -14,8 +14,24 @@ namespace MTCG.Server
         {
             Console.WriteLine("Hello World!");
 
+            PostgreSqlClass db = new PostgreSqlClass();
+            List<Card> cardList = new List<Card>();
+            cardList = db.GetCardsFromDB();
+            Console.WriteLine();
             Server myserver = new Server("127.0.0.1", 8000);
 
+            for (int i = 0; i < cardList.Count; i++)
+            {
+                Console.WriteLine(cardList[i].GetCardName() + " |Card Type: " + cardList[i].GetCardType() + " |Piercing Damage: " + cardList[i].GetPiercing());
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("Hransig HP : " + cardList[1].GetHP());
+            cardList[0].Attack(cardList[1]);
+            Console.WriteLine("Hransig HP : " + cardList[1].GetHP());
+
+
+            Console.ReadKey();
             Console.WriteLine("Server Started...!");
             
         }

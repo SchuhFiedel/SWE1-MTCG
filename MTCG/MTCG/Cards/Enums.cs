@@ -4,6 +4,8 @@ using System.Text;
 
 namespace MTCG.Cards
 {
+
+    //no summary needed
     public enum CardTypes
     {
         Spell = 0,
