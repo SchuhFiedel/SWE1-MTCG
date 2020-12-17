@@ -30,7 +30,7 @@ namespace ServerTests
         }
 
         [Test]
-        public void RequestContextTest1()
+        public void ARequestContextGetTest1()
         {
             string messageOne = "GET" + " " + "/messages" +" "+ "HTTP / 1.1\n" +
                                 "Host: " + uri + "\n" +
@@ -49,7 +49,7 @@ namespace ServerTests
         }
 
         [Test]
-        public void RequestContextTest2()
+        public void BRequestContextPostTest1()
         {
             string text = "Hello!";
 
@@ -73,7 +73,7 @@ namespace ServerTests
         }
 
         [Test]
-        public void RequestContextTest3()
+        public void CRequestContextPostTest2()
         {
             string text = "There!";
 
@@ -96,7 +96,7 @@ namespace ServerTests
         }
 
         [Test]
-        public void RequestContextTest4()
+        public void DRequestContextGetTest2()
         {
             string messageTwo = "GET" + " " + "/messages/0" + " " + "HTTP / 1.1\n" +
                                 "Host: " + uri + "\n" +
@@ -114,7 +114,7 @@ namespace ServerTests
         }
 
         [Test]
-        public void RequestContextTest5()
+        public void ERequestContextPutTest1()
         {
             string text = "PUT ME ON TOP!";
 
@@ -137,7 +137,7 @@ namespace ServerTests
         }
 
         [Test]
-        public void RequestContextTest6()
+        public void FRequestContextDeleteTest1()
         {
 
             string messageTwo = "DELETE" + " " + "/messages/0" + " " + "HTTP/1.1\n" +

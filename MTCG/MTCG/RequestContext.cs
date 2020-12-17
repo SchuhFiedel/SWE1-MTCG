@@ -47,8 +47,28 @@ namespace MTCG.Server
                     if (tokens[1] == "messages" && tokens.Length == 3){
                         if (messages.Count > Int32.Parse(tokens[2])){
                             //change message
-                            messages[Int32.Parse(tokens[2])] = messageLines[messageLines.Length-1];
-                            response = "Changed " + tokens[2] + ": " + messageLines[messageLines.Length - 1];
+                            int rowcounter = 0;
+                            foreach (string x in messageLines)
+                            {
+                                rowcounter += 1;
+                                if (x == "\r" || x == "\n" || x == "")
+                                {
+                                    break;
+                                }
+                            }
+
+                            string addMessage = "";
+                            for (; rowcounter < messageLines.Length; rowcounter++)
+                            {
+                                addMessage += messageLines[rowcounter];
+                                if ((messageLines.Length - 1 - rowcounter) > 0)
+                                {
+                                    addMessage += "\n";
+                                }
+                            }
+
+                            messages[Int32.Parse(tokens[2])] = addMessage;
+                            response = "Changed " + tokens[2] + ": " + addMessage;
                         }else{
                             response = "Change not possible - Message ID does not exist!";
                         }
@@ -72,10 +92,29 @@ namespace MTCG.Server
                 case "POST":
                     if (tokens[1] == "messages" && tokens.Length <= 2){
                         //add message from Payload
-                        messages.Add(messageLines[messageLines.Length - 1]);
-                        response = "Added: " + messageLines[messageLines.Length - 1] + " To ID: " + (messages.Count-1);
-                        
-                    }else{
+                        int rowcounter = 0;
+                        foreach (string x in messageLines) {
+                            rowcounter += 1;
+                            if (x == "\r" ||x == "\n" || x== "")
+                            {
+                                break;
+                            }
+                        }
+
+                        string addMessage = "";
+                        for (;rowcounter < messageLines.Length; rowcounter++)
+                        {
+                            addMessage += messageLines[rowcounter];
+                            if ((messageLines.Length-1 - rowcounter) > 0)
+                            {
+                                addMessage += "\n";
+                            }
+                        }
+                        messages.Add(addMessage);
+                        response += "Added: " + addMessage + " To ID: " + (messages.Count - 1);
+
+                    }
+                    else{
                         response = "ERROR - Wrong number of arguments!";
                     }
                     break;
