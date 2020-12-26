@@ -14,9 +14,6 @@ namespace Client
             Int32 port = 8000;
             string address = "127.0.0.1";
             string uri = "http://" + address + ":" + port;
-            //string altUri = "https://httpbin.org/";
-            //HttpClient client = new HttpClient();
-
             
             TcpClient t_client = new TcpClient(address, port);
             NetworkStream stream = t_client.GetStream();
@@ -32,36 +29,30 @@ namespace Client
                 {
                     case "EXIT":
                         Console.WriteLine("Ending Program!");
-                        //HttpRequest("EXIT", uri, stream);
                         t_client.Close();
                         break;
                     case "1":
                         Console.WriteLine("Get ALL Messages!");
-                        //await GetAllMessages(client, uri);
                         HttpRequest("GET1", uri, stream);
 
                         break;
                     case "2":
                         Console.WriteLine("Get Specific Message!");
-                        //await GetMessage(client, uri);
                         HttpRequest("GET2", uri, stream);
 
                         break;
                     case "3":
                         Console.WriteLine("Post Message!");
-                        //await PostMessage(client, uri);
                         HttpRequest("POST", uri, stream);
 
                         break;
                     case "4":
                         Console.WriteLine("Put Message!");
-                        //await PutMessage(client, uri);
                         HttpRequest("PUT", uri, stream);
 
                         break;
                     case "5":
                         Console.WriteLine("Delete message!");
-                        //await DelMessage(client, uri);
                          HttpRequest("DELETE", uri, stream);
 
                         break;
@@ -158,7 +149,7 @@ namespace Client
                 Console.WriteLine("Sent: \n {0}", answerString);
             }
             catch(System.IO.IOException e) {
-                Console.Write("Server ended connection!");
+                Console.Write("Server ended connection!", e);
             }
         }
     }

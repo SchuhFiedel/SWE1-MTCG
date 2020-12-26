@@ -41,8 +41,17 @@ namespace MTCG.Util
             cmd.ExecuteNonQuery();
         }
 
+        public void RegUser(string username, string pwd)
+        {
+            NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO usertable (username, password, coins, elo, num_games) " +
+                "VALUES (@a,@b,20,0,0);", connection);
 
+            cmd.Parameters.AddWithValue("a", username);
+            cmd.Parameters.AddWithValue("b", pwd);
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
 
+        }
 
         public List<Card> GetCardsFromDB()
         {
