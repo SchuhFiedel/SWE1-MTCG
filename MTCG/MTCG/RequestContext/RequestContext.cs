@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using MTCG.Util;
+using MTCG;
 
 
 
@@ -10,6 +11,7 @@ namespace MTCG.Server
     public class RequestContext
     {
         PostgreSqlClass DB = new PostgreSqlClass();
+        User user = new User();
 
         public string Context(string data, List<string> messages)
         {
@@ -36,10 +38,20 @@ namespace MTCG.Server
                         case "GET":
                             //response = GetUserInfos(messageLines);
                         break;
+                        case "PUT":
+                            //reponse = Change Success / No Success
+                        break;
                     }
                     break;
-                case "session":
+                case "sessions":
                     //login = POST session,
+                    switch (request)
+                    {
+                        case "POST":
+                            response = loginUser(messageLines);
+                            break;
+                    }
+
                     break;
                 case "packages":
                     //create = POST packages, 
@@ -64,6 +76,9 @@ namespace MTCG.Server
                     break;
                 case "battle":
                     //go to matchmaking and fight = POST battles
+                    break;
+                default:
+                    response = "EXIT";
                     break;
             }
 
@@ -193,20 +208,77 @@ namespace MTCG.Server
                 if (rowinfo[0] == "Username") { username = rowinfo[1]; }
                 if (rowinfo[0] == "Password") { password = rowinfo[1]; }
             }
-            //Console.WriteLine("INFO " + username + " " + password);
-            //Console.WriteLine("DEBUG " + attr[0] + " " + attr[1]);
 
             try
             {
                 DB.RegUser(username, password);
-                response = "Registration Successfull!";
+                response = "{\n" +
+                            "\"Registration\": \"Successful\"\n"+
+                            "}";
+            }
+            catch (Npgsql.PostgresException e)
+            {
+                response = "{\n" +
+                            "\"Registration\": \"Unsuccessful\",\n" +
+                            "\"DB-Exception\": \"" + e.Message + "\"\n" +
+                            "}";
+            }
+
+            return response;
+        }
+
+        private string loginUser(string[] messageLines)
+        {
+            string response = "";
+            Console.WriteLine("User Login");
+            int rowcounter = SearchDataRow(messageLines);
+            string info = AddMessage(rowcounter, messageLines);
+
+            info = info.Replace("\n", "").Replace("\r", "").Replace("\t", "")
+                       .Replace("{", "").Replace("}", "").Replace("\"", "").Replace(" ", "");
+
+            string[] attr = info.Split(',');
+
+            string username = "";
+            string password = "";
+            for (int i = 0; i < attr.Length; i++)
+            {
+                string[] rowinfo = attr[i].Split(':');
+                if (rowinfo[0] == "Username") { username = rowinfo[1]; }
+                if (rowinfo[0] == "Password") { password = rowinfo[1]; }
+            }
+
+            try
+            {
+                User user = DB.getUser(username, password);
+                string newToken = user.setSessionToken(username, password);
+                System.Threading.Thread.Sleep(1000);
+                
+                if(newToken!=DB.getToken(user.user_id))
+                {
+                    System.Threading.Thread.Sleep(1000);
+                    DB.Insert("INSERT INTO validtokens (token,user_id) VALUES('" + newToken + "'," + user.user_id + ")");
+                }
+                response = "{\n" +
+                            "\"Login\": \"Success\",\n" +
+                            "\"Token\": \"" + newToken + "\"" +
+                            "}";
+            }
+            catch (ArgumentException e)
+            {
+                response = "{\n" +
+                            "\"Login\": \"Unsuccessful\",\n" +
+                            "\"DB-Exception\": \"" + e.Message + "\"\n" +
+                            "}";
             }
             catch (Npgsql.PostgresException e)
             {
                 //Console.WriteLine("DB-Exception: {0}", e.Message);
-                response = "Not able to register user! ERROR:\n" + e.Message;
+                response = "{\n" +
+                            "\"Login\": \"Unsuccessful\",\n" +
+                            "\"DB-Exception\": \"" + e.Message + "\"\n" +
+                            "}";
             }
-
             return response;
         }
     }

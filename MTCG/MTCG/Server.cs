@@ -17,7 +17,7 @@ namespace MTCG.Server
         {
             IPAddress localAddr = IPAddress.Parse(ip);
             server = new TcpListener(localAddr, port);
-            server.Start(1);
+            server.Start(5);
             StartListener();
         }
 
@@ -35,6 +35,7 @@ namespace MTCG.Server
                         break;
                     }
                     t.Start(client);
+                    
                 }
             }catch (SocketException e){
                 Console.WriteLine("SocketException: {0}", e);
@@ -50,18 +51,32 @@ namespace MTCG.Server
             string data = null;
             Byte[] bytes = new Byte[200000];
             int i;
-            try{
-                while ((i = stream.Read(bytes, 0, bytes.Length)) != 0){
-                    data = Encoding.ASCII.GetString(bytes, 0, i);
+            bool stop = true;
+            while (stop)
+            {
+                try
+                {
+                    while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                    {
+                        data = Encoding.ASCII.GetString(bytes, 0, i);
 
-                    string response = req.Context(data, messages);
-
-                    AnswerClient(stream, response);
+                        string response = req.Context(data, messages);
+                        if (response == "EXIT") stop = false;
+                        AnswerClient(stream, response);
+                        if(stop == false) { break; }
+                    }
                 }
-            }catch (Exception e){
-                Console.WriteLine("Exception: {0}", e.ToString());
-                client.Close();
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception: {0}", e.ToString());
+                    stream.Close();
+                    client.Close();
+                }
+
+                data = null;
             }
+            stream.Close();
+            client.Close();
         }
 
         void AnswerClient(NetworkStream stream, string response)
@@ -71,7 +86,7 @@ namespace MTCG.Server
                         "Server: MTCG \n" +
                         "Content-Length:" + response.Length + " \n" +
                         "Content-Language: de \n" +
-                        "Connection: close \n" +
+                        "Connection: open \n" +
                         "Keep-Alive: timeout=50, max=0 \n" +
                         "Access-Control-Allow-Origin: *\n" +
                         "Access-Control-Allow-Credentials: true\n" +

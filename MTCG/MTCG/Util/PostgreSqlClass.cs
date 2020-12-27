@@ -11,21 +11,20 @@ namespace MTCG.Util
 {
     public class PostgreSqlClass
     {
-        private NpgsqlConnection connection;
+        //private NpgsqlConnection connection;
 
         public PostgreSqlClass()
-        {
-            SetConnect();
-        }
+        {}
 
-        public void SetConnect()
+        public NpgsqlConnection SetConnect()
         {
             string sqlConnectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcg";
             try
             {
-                connection = new NpgsqlConnection(sqlConnectionString);
+                NpgsqlConnection connection = new NpgsqlConnection(sqlConnectionString);
                 connection.Open();
                 Console.WriteLine("No Error - Connection Established!");
+                return connection;
             }
             catch (Exception e)
             {
@@ -37,12 +36,17 @@ namespace MTCG.Util
 
         public void Insert(string sqlStatement)
         {
-            NpgsqlCommand cmd = new NpgsqlCommand(sqlStatement,connection);
+            NpgsqlConnection connection = SetConnect();
+
+            NpgsqlCommand cmd = new NpgsqlCommand(sqlStatement, connection);
+            cmd.Prepare();
             cmd.ExecuteNonQuery();
         }
 
         public void RegUser(string username, string pwd)
         {
+            NpgsqlConnection connection = SetConnect();
+
             NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO usertable (username, password, coins, elo, num_games) " +
                 "VALUES (@a,@b,20,0,0);", connection);
 
@@ -50,13 +54,13 @@ namespace MTCG.Util
             cmd.Parameters.AddWithValue("b", pwd);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
-
         }
 
         public List<Card> GetCardsFromDB()
         {
             List<Card> cards = new List<Card>();
 
+            NpgsqlConnection connection = SetConnect();
             NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM cards", connection);
             NpgsqlDataReader reader = cmd.ExecuteReader();
 
@@ -79,6 +83,53 @@ namespace MTCG.Util
             return cards;
         }
 
+        public User getUser(string username, string pwd)
+        {
+            NpgsqlConnection connection = SetConnect();
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM usertable WHERE username = @a AND password = @b;", connection);
+            cmd.Parameters.AddWithValue("a", username);
+            cmd.Parameters.AddWithValue("b", pwd);
+            cmd.Prepare();
+
+            NpgsqlDataReader reader = cmd.ExecuteReader();
+
+            User user = null;
+
+            if (reader.HasRows)
+            {
+                reader.Read();
+                Console.WriteLine(reader.GetPostgresType(0));
+                if (reader.IsDBNull(6) && reader.IsDBNull(7))
+                {
+                    user = new User(reader.GetString(1), reader.GetString(2), "","",
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5));
+                }
+                else if (reader.IsDBNull(6))
+                {
+                    user = new User(reader.GetString(1), reader.GetString(2), "", reader.GetString(7),
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5));
+                }
+                else if (reader.IsDBNull(7))
+                {
+                    user = new User(reader.GetString(1), reader.GetString(2), reader.GetString(6),"",
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5));
+                }
+                else
+                {
+                    user = new User(reader.GetString(1), reader.GetString(2), reader.GetString(6), reader.GetString(7),
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5));
+                }
+
+                reader.Close();
+                return user;
+            }
+            else
+            {
+                reader.Close();
+                throw new ArgumentException("User data not found!");
+            }
+
+        }
 
         /* BEISPIEL FÜR SPEICHERUNG (OHNE SQL INJECTION MÖGLIcHKEIT)
         public void InsertError()
@@ -94,5 +145,25 @@ namespace MTCG.Util
 
         }*/
 
+        public string getToken(int user_id)
+        {
+            NpgsqlConnection connection = SetConnect();
+
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT token FROM validtokens WHERE user_id = @a;", connection);
+            cmd.Parameters.AddWithValue("a", user_id);
+            cmd.Prepare();
+
+            NpgsqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.HasRows)
+            {
+                reader.Read();
+                return reader.GetString(0);
+            }
+            else
+            {
+                return "NULL";
+            }
+        }
     }
 }
