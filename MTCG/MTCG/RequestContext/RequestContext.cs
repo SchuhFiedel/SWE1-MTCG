@@ -12,8 +12,9 @@ namespace MTCG.Server
     {
         PostgreSqlClass DB = new PostgreSqlClass();
         User user = new User();
+        string authentication = "";
 
-        public string Context(string data, List<string> messages)
+        public Tuple<string,string> Context(string data, List<string> messages)
         {
             //processing data
             string[] messageLines = data.Split('\n');
@@ -24,7 +25,7 @@ namespace MTCG.Server
 
             Console.WriteLine(data);
 
-            string response = "";
+            Tuple<string, string> response = Tuple.Create("CONNECTION CLOSED!","EXIT");
 
             switch (tokens[1])
             {
@@ -37,6 +38,7 @@ namespace MTCG.Server
                         break;
                         case "GET":
                             //response = GetUserInfos(messageLines);
+                           response = Tuple.Create(authentication,"EXIT");
                         break;
                         case "PUT":
                             //reponse = Change Success / No Success
@@ -48,7 +50,7 @@ namespace MTCG.Server
                     switch (request)
                     {
                         case "POST":
-                            response = loginUser(messageLines);
+                            response = LoginUser(messageLines);
                             break;
                     }
 
@@ -78,11 +80,9 @@ namespace MTCG.Server
                     //go to matchmaking and fight = POST battles
                     break;
                 default:
-                    response = "EXIT";
+                    
                     break;
             }
-
-
 
             /*
             switch (request){
@@ -190,9 +190,9 @@ namespace MTCG.Server
             return addMessage;
         }
 
-        private string UserRegistration(string[] messageLines)
+        private Tuple<string, string> UserRegistration(string[] messageLines)
         {
-            string response = "";
+            Tuple<string, string> response;
             Console.WriteLine("User Registration");
             int rowcounter = SearchDataRow(messageLines);
             string info = AddMessage(rowcounter, messageLines);
@@ -212,28 +212,30 @@ namespace MTCG.Server
             try
             {
                 DB.RegUser(username, password);
-                response = "{\n" +
+                response = Tuple.Create(
+                            "{\n" +
                             "\"Registration\": \"Successful\"\n"+
-                            "}";
+                            "}","EXIT");
             }
             catch (Npgsql.PostgresException e)
             {
-                response = "{\n" +
+                response = Tuple.Create("{\n" +
                             "\"Registration\": \"Unsuccessful\",\n" +
                             "\"DB-Exception\": \"" + e.Message + "\"\n" +
-                            "}";
+                            "}","EXIT");
             }
 
             return response;
         }
 
-        private string loginUser(string[] messageLines)
+        private Tuple<string, string> LoginUser(string[] messageLines)
         {
-            string response = "";
+            Tuple<string, string> response;
             Console.WriteLine("User Login");
             int rowcounter = SearchDataRow(messageLines);
             string info = AddMessage(rowcounter, messageLines);
 
+            //process string in json format
             info = info.Replace("\n", "").Replace("\r", "").Replace("\t", "")
                        .Replace("{", "").Replace("}", "").Replace("\"", "").Replace(" ", "");
 
@@ -250,34 +252,37 @@ namespace MTCG.Server
 
             try
             {
-                User user = DB.getUser(username, password);
-                string newToken = user.setSessionToken(username, password);
+                //get user info from DB
+                user = DB.GetUser(username, password);
+                string newToken = user.SetSessionToken(username, password); //make new token
                 System.Threading.Thread.Sleep(1000);
                 
-                if(newToken!=DB.getToken(user.user_id))
+                if(newToken!=DB.GetToken(user.user_id))
                 {
                     System.Threading.Thread.Sleep(1000);
                     DB.Insert("INSERT INTO validtokens (token,user_id) VALUES('" + newToken + "'," + user.user_id + ")");
                 }
-                response = "{\n" +
+                response = Tuple.Create("{\n" +
                             "\"Login\": \"Success\",\n" +
                             "\"Token\": \"" + newToken + "\"" +
-                            "}";
+                            "}","ALIVE");
+                authentication = newToken;
             }
             catch (ArgumentException e)
             {
-                response = "{\n" +
+                //catch exception -> wrong arguments
+                response = Tuple.Create("{\n" +
                             "\"Login\": \"Unsuccessful\",\n" +
                             "\"DB-Exception\": \"" + e.Message + "\"\n" +
-                            "}";
+                            "}","EXIT");
             }
             catch (Npgsql.PostgresException e)
             {
-                //Console.WriteLine("DB-Exception: {0}", e.Message);
-                response = "{\n" +
+                //catch DB exception
+                response = Tuple.Create("{\n" +
                             "\"Login\": \"Unsuccessful\",\n" +
                             "\"DB-Exception\": \"" + e.Message + "\"\n" +
-                            "}";
+                            "}","EXIT");
             }
             return response;
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Text;
 using MTCG;
 using MTCG.Cards;
@@ -18,7 +17,7 @@ namespace MTCG.Util
 
         public NpgsqlConnection SetConnect()
         {
-            string sqlConnectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcg";
+            string sqlConnectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcg;Pooling=false";
             try
             {
                 NpgsqlConnection connection = new NpgsqlConnection(sqlConnectionString);
@@ -41,6 +40,8 @@ namespace MTCG.Util
             NpgsqlCommand cmd = new NpgsqlCommand(sqlStatement, connection);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
+
+            connection.Close();
         }
 
         public void RegUser(string username, string pwd)
@@ -54,6 +55,8 @@ namespace MTCG.Util
             cmd.Parameters.AddWithValue("b", pwd);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
+
+            connection.Close();
         }
 
         public List<Card> GetCardsFromDB()
@@ -79,11 +82,12 @@ namespace MTCG.Util
                 cards.Add(tmp);
             }
 
+            connection.Close();
             Console.WriteLine("Got all them cards Mate!");
             return cards;
         }
 
-        public User getUser(string username, string pwd)
+        public User GetUser(string username, string pwd)
         {
             NpgsqlConnection connection = SetConnect();
             NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM usertable WHERE username = @a AND password = @b;", connection);
@@ -121,11 +125,13 @@ namespace MTCG.Util
                 }
 
                 reader.Close();
+                connection.Close();
                 return user;
             }
             else
             {
                 reader.Close();
+                connection.Close();
                 throw new ArgumentException("User data not found!");
             }
 
@@ -145,7 +151,7 @@ namespace MTCG.Util
 
         }*/
 
-        public string getToken(int user_id)
+        public string GetToken(int user_id)
         {
             NpgsqlConnection connection = SetConnect();
 
@@ -158,10 +164,13 @@ namespace MTCG.Util
             if (reader.HasRows)
             {
                 reader.Read();
-                return reader.GetString(0);
+                var ret = reader.GetString(0);
+                connection.Close();
+                return ret;
             }
             else
             {
+                connection.Close();
                 return "NULL";
             }
         }

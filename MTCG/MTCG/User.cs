@@ -23,10 +23,10 @@ namespace MTCG
 
         public User(string usr, string pwd, string info, string img, int id, int coins, int elo, int games)
         {
-            setAll(usr, pwd, info, img, id, coins, elo, games);
+            SetAll(usr, pwd, info, img, id, coins, elo, games);
         }
 
-        public void setAll(string usr, string pwd, string info, string img, int id, int coins, int elo, int games)
+        public void SetAll(string usr, string pwd, string info, string img, int id, int coins, int elo, int games)
         {
             this.username = usr;
             this.password = pwd;
@@ -39,7 +39,7 @@ namespace MTCG
             this.num_games = games;
         }
 
-        public string setSessionToken(string username, string pwd) {
+        public string SetSessionToken(string username, string pwd) {
             string sessionToken = username + pwd + "-mtcgToken";
             this.sessionToken = sessionToken;
             return sessionToken;

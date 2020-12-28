@@ -51,6 +51,7 @@ namespace MTCG.Server
             string data = null;
             Byte[] bytes = new Byte[200000];
             int i;
+            //run thread with connection to single client until client ends connection or Error happens
             bool stop = true;
             while (stop)
             {
@@ -60,9 +61,9 @@ namespace MTCG.Server
                     {
                         data = Encoding.ASCII.GetString(bytes, 0, i);
 
-                        string response = req.Context(data, messages);
-                        if (response == "EXIT") stop = false;
-                        AnswerClient(stream, response);
+                        Tuple<string, string> response = req.Context(data, messages); //send StreamData to the Request Kontext 
+                        if (response.Item2 == "EXIT") stop = false;                   // Response = Tuple (Response, ConnStatus)
+                        AnswerClient(stream, response.Item1);
                         if(stop == false) { break; }
                     }
                 }
@@ -71,6 +72,7 @@ namespace MTCG.Server
                     Console.WriteLine("Exception: {0}", e.ToString());
                     stream.Close();
                     client.Close();
+                    stop = false;
                 }
 
                 data = null;
