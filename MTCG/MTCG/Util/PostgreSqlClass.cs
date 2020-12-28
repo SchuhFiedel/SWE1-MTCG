@@ -12,8 +12,7 @@ namespace MTCG.Util
     {
         //private NpgsqlConnection connection;
 
-        public PostgreSqlClass()
-        {}
+        public PostgreSqlClass(){}
 
         public NpgsqlConnection SetConnect()
         {
@@ -59,7 +58,7 @@ namespace MTCG.Util
             connection.Close();
         }
 
-        public List<Card> GetCardsFromDB()
+        public List<Card> GetAllCardsFromDB()
         {
             List<Card> cards = new List<Card>();
 
@@ -81,7 +80,39 @@ namespace MTCG.Util
                                     reader.GetBoolean(9)); //piercing
                 cards.Add(tmp);
             }
+            reader.Close();
+            connection.Close();
+            Console.WriteLine("Got all them cards Mate!");
+            return cards;
+        }
 
+        public List<Card> GetAllUserCards(User user)
+        {
+            List<Card> cards = new List<Card>();
+
+            NpgsqlConnection connection = SetConnect();
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM cards " +
+                                                  "INNER JOIN cardstacks on card_id = i_cid " +
+                                                  "WHERE user_id = @a;", connection);
+            cmd.Parameters.AddWithValue("a", user.user_id);
+            cmd.Prepare();
+            NpgsqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Card tmp = new Card(reader.GetInt32(0), //CardID
+                                    reader.GetString(1), //Cardname
+                                    reader.GetString(2), //CardInfo
+                                    (CardTypes)Convert.ToInt32(reader.GetBoolean(3)), //CardType
+                                    (ElementTypes)reader.GetInt32(4), //ElementType
+                                    (SpecialTypes)reader.GetInt32(5), //SpecialType
+                                    reader.GetInt32(6), //MaxHP
+                                    reader.GetInt32(7), //MaxAP
+                                    reader.GetInt32(8), //MaxDP
+                                    reader.GetBoolean(9)); //piercing
+                cards.Add(tmp);
+            }
+            reader.Close();
             connection.Close();
             Console.WriteLine("Got all them cards Mate!");
             return cards;

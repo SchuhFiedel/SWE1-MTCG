@@ -54,8 +54,9 @@ namespace MTCG.Cards
         //get functions
         public ElementTypes GetElementType() { return elementType; }
         public CardTypes GetCardType() { return cardType; }
-        public SpecialTypes getSpecial() { return specialType; }
+        public SpecialTypes GetSpecial() { return specialType; }
         public string GetCardName() { return cardName; }
+        public string GetCardInfo() { return cardInfo; }
         public int GetHP() { return healthPoints; }
         public int GetAP() { return attackPoints; }
         public int GetDP() { return defensePoints; }
@@ -77,7 +78,7 @@ namespace MTCG.Cards
 
             if (attacker.GetCardType() == CardTypes.Spell)
             {
-                remAP = checkBuffs(remAP, attacker);
+                remAP = CheckBuffs(remAP, attacker);
 
                 if(this.specialType == SpecialTypes.Knight)
                 {
@@ -112,30 +113,30 @@ namespace MTCG.Cards
             return (remDP, remAP);
         }
 
-        double buff(double atp)
+        double Buff(double atp)
         {
             return (atp * 1.5);
         }
 
-        double debuff(double atp)
+        double Debuff(double atp)
         {
             return (atp * 0.5);
         }
 
-        double checkBuffs(double atp, Card attacker)
+        double CheckBuffs(double atp, Card attacker)
         {
             //Buffs
-            if (attacker.GetElementType() == ElementTypes.Water && (this.elementType == ElementTypes.Fire || this.elementType == ElementTypes.Air)) { atp = buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Fire && (this.elementType == ElementTypes.Normal || this.elementType == ElementTypes.Ice)) { atp = buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Normal && (this.elementType == ElementTypes.Water || this.elementType == ElementTypes.Earth)) { atp = buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Earth && (this.elementType == ElementTypes.Fire || this.elementType == ElementTypes.Ice)) { atp = buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Ice && (this.elementType == ElementTypes.Electro || this.elementType == ElementTypes.Air)) { atp = buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Electro && (this.elementType == ElementTypes.Normal || this.elementType == ElementTypes.Earth)) { atp = buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Air && this.elementType == ElementTypes.Electro) { atp = buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Water && (this.elementType == ElementTypes.Fire || this.elementType == ElementTypes.Air)) { atp = Buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Fire && (this.elementType == ElementTypes.Normal || this.elementType == ElementTypes.Ice)) { atp = Buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Normal && (this.elementType == ElementTypes.Water || this.elementType == ElementTypes.Earth)) { atp = Buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Earth && (this.elementType == ElementTypes.Fire || this.elementType == ElementTypes.Ice)) { atp = Buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Ice && (this.elementType == ElementTypes.Electro || this.elementType == ElementTypes.Air)) { atp = Buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Electro && (this.elementType == ElementTypes.Normal || this.elementType == ElementTypes.Earth)) { atp = Buff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Air && this.elementType == ElementTypes.Electro) { atp = Buff(atp); }
 
             //Debuffs
-            if (attacker.GetElementType() == ElementTypes.Water && this.elementType == ElementTypes.Ice) { atp = debuff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Fire && this.elementType == ElementTypes.Air) { atp = debuff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Water && this.elementType == ElementTypes.Ice) { atp = Debuff(atp); }
+            if (attacker.GetElementType() == ElementTypes.Fire && this.elementType == ElementTypes.Air) { atp = Debuff(atp); }
 
             return atp;
         }

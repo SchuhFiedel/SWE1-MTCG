@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using MTCG.Util;
 using MTCG;
+using MTCG.Cards;
 
 
 
@@ -12,6 +13,7 @@ namespace MTCG.Server
     {
         PostgreSqlClass DB = new PostgreSqlClass();
         User user = new User();
+        List<Card> userCardStack = new List<Card>();
         string authentication = "";
 
         public Tuple<string, string> Context(string data, List<string> messages)
@@ -22,9 +24,9 @@ namespace MTCG.Server
             string request = tokens[0]; //first row first token (GET/POST/PUT/DEL)
             string path = tokens[1]; //first row second token
             tokens = path.Split('/'); //split path in messages and id
-            int rowcounter = SearchDataRow(messageLines);
-            Tuple<string[], string> allData = SplitData(rowcounter, messageLines);
-            Dictionary<string, string> headers = GetHeaders(allData);
+            int rowcounter = SearchDataRow(messageLines); // find row where Header ends
+            Tuple<string[], string> allData = SplitData(rowcounter, messageLines); // split messageLines in HeaderArray and Payload string
+            Dictionary<string, string> headers = GetHeaders(allData.Item1); //Split Header Array into Dictinary with Attributes and Values
 
             Console.WriteLine(data);
 
@@ -48,8 +50,7 @@ namespace MTCG.Server
                             if (CheckAuthenticity(allData.Item2, headers))
                             {
                                 response = Tuple.Create(GetUserInfo(user), "ALIVE");
-                            }
-                            else
+                            }else
                             {
                                 response = Tuple.Create("{\n" +
                                                         "\"Query\": \"Unsuccessful\"\n" +
@@ -87,31 +88,58 @@ namespace MTCG.Server
                     break;
 
                 case "sessions":
-                    //login = POST session,
+                    //TO-DO
+                    //login = POST sessions, logour = DELETE sessions 
                     switch (request)
                     {
+                        //DONE
+                        //Login = POST sessions -> sets authentication token in RequestContext and DB
                         case "POST":
                             response = LoginUser(allData.Item2);
                             break;
+                        //TO-DO
+                        //Logout = DELETE sessions -> delete token in DB, end connection to client, close client, close Handler Thread
                         case "DELETE":
-                            //Delete Token from Session, End Connection with Client, Close Client
                             break;
                     }
 
                     break;
                 case "packages":
+                    //TO-DO
                     //create = POST packages, ONLY IF ADMIN
                     break;
                 case "transactions":
+                    //TO-DO
                     //buy = POST transactions/packages
                     break;
                 case "cards":
+                    //TO-DO
                     //show all of user = GET cards
+                    switch (request)
+                    {
+                        case "GET":
+
+                            userCardStack = DB.GetAllUserCards(user);
+                            string serialCards = SerializeCards(userCardStack);
+                            response = Tuple.Create(serialCards, "ALIVE");
+                            break;
+                    }
                     break;
                 case "deck":
+                    //TO-DO
                     //show deck of user = GET deck; config deck = PUT deck
+                    switch (request)
+                    {
+                        case "GET":
+                            //response = GetUserDeckCards();
+                            break;
+                        case "PUT":
+                            //response = AddCardsToUserDeck();
+                            break;
+                    }
                     break;
                 case "stats":
+                    //TO-DO
                     //show user stats = GET stats;
                     break;
                 case "score":
@@ -145,6 +173,62 @@ namespace MTCG.Server
                 }
             }
             return rowcounter;
+        }
+
+        //Make Json format strings more readable
+        private string RemoveUnnecessaryChars(string info)
+        {
+            info = info.Replace("\n", "").Replace("\r", "").Replace("\t", "")
+                        .Replace("{", "").Replace("}", "").Replace(" \"", "").Replace("\"", "");
+            return info;
+        }
+
+        //Check if authentication token is the same as saved for this login
+        private bool CheckAuthenticity(string payload, Dictionary<string, string> headers)
+        {
+            string info;
+            if (!headers.TryGetValue("Authentication", out info))
+                return false;
+
+            if (info == authentication)
+                return true;
+            else
+                return false;
+        }
+
+        //Split data into Headers and Payload
+        private Tuple<string[], string> SplitData(int rowcounter, string[] messageLines)
+        {
+            string[] a = new string[] { };
+            string b = "";
+            List<string> tmp = new List<string>();
+
+            for (int i = 0; i < rowcounter - 1; i++)
+            {
+                tmp.Add(messageLines[i].Replace(" ", ""));
+            }
+            for (int i = 0; i + rowcounter < messageLines.Length; i++)
+            {
+                b += messageLines[i + rowcounter];
+            }
+
+            a = tmp.ToArray();
+            Tuple<string[], string> addMessage = Tuple.Create(a, b);
+
+            return addMessage;
+        }
+
+        //get all headers into a dictionary
+        private Dictionary<string, string> GetHeaders(string[] data)
+        {
+            Dictionary<string, string> Headers = new Dictionary<string, string>();
+
+            for (int i = 1; i < data.Length - 1; i++)
+            {
+                string[] tmp = data[i].Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "").Split(":");
+                Headers.Add(tmp[0], tmp[1]);
+            }
+            return Headers;
         }
 
         //register user in the DB
@@ -243,55 +327,8 @@ namespace MTCG.Server
             }
             return response;
         }
-
-        //Check if authentication token is the same as saved for this login
-        private bool CheckAuthenticity(string payload, Dictionary<string, string> headers)
-        {
-            string info;
-            if (!headers.TryGetValue("Authentication", out info))
-                return false;
-
-            if (info == authentication)
-                return true;
-            else
-                return false;
-        }
-
-        //Split data into Headers and Payload
-        private Tuple<string[], string> SplitData(int rowcounter, string[] messageLines)
-        {
-            string[] a = new string[] { };
-            string b = "";
-            List<string> tmp = new List<string>();
-
-            for (int i = 0; i < rowcounter - 1; i++)
-            {
-                tmp.Add(messageLines[i].Replace(" ", ""));
-            }
-            for (int i = 0; i + rowcounter < messageLines.Length; i++)
-            {
-                b += messageLines[i + rowcounter];
-            }
-
-            a = tmp.ToArray();
-            Tuple<string[], string> addMessage = Tuple.Create(a, b);
-
-            return addMessage;
-        }
-
-        //get all headers into a dictionary
-        private Dictionary<string, string> GetHeaders(Tuple<string[], string> allData)
-        {
-            Dictionary<string, string> Headers = new Dictionary<string, string>();
-
-            for (int i = 1; i < allData.Item1.Length - 1; i++)
-            {
-                string[] tmp = allData.Item1[i].Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "").Split(":");
-                Headers.Add(tmp[0], tmp[1]);
-            }
-            return Headers;
-        }
-
+       
+        //get all information on user
         private string GetUserInfo(User user)
         {
             string userInfo = "";
@@ -327,6 +364,7 @@ namespace MTCG.Server
             
         }
 
+        //Change Username, Bio and Image of User
         private bool ChangeUserInfo(User user, string info, string pathUser)
         {
             bool success = false;
@@ -365,7 +403,7 @@ namespace MTCG.Server
                 this.user = DB.GetUser(newUsername);
                 success = true;
             }
-            catch (Npgsql.PostgresException e)
+            catch (Npgsql.PostgresException)
             {
                 success = false;
             }
@@ -373,11 +411,26 @@ namespace MTCG.Server
             return success;
         }
 
-        private string RemoveUnnecessaryChars(string info)
+        private string SerializeCards(List<Card> cardList)
         {
-            info = info.Replace("\n", "").Replace("\r", "").Replace("\t", "")
-                        .Replace("{", "").Replace("}", "").Replace(" \"", "").Replace("\"", "");
-            return info;
+            string response = "{\n\"CardNum\":\""+cardList.Count+"\",\n";
+            for(int i = 0; i<cardList.Count; i++)
+            {
+                response += "\"Card\":\n";
+                response += "{\n";
+                response += "\"CardName\": \""+ cardList[i].GetCardName() + "\",\n";
+                response += "\"CardInfo\": \"" + cardList[i].GetCardInfo() + "\",\n";
+                response += "\"CardType\": \"" + cardList[i].GetCardType() + "\",\n";
+                response += "\"CardSpecial\": \"" + cardList[i].GetSpecial() + "\",\n";
+                response += "\"CardHP\": \"" + cardList[i].GetHP() + "\",\n";
+                response += "\"CardAP\": \"" + cardList[i].GetAP() + "\",\n";
+                response += "\"CardDP\": \"" + cardList[i].GetDP() + "\",\n";
+                response += "\"CardPiercing\": \"" + cardList[i].GetPiercing() + "\",\n";
+                response += "}\n";
+            }
+            response += "}";
+                                 
+            return response;
         }
     }
 }
