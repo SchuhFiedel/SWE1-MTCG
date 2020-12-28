@@ -87,12 +87,12 @@ namespace MTCG.Util
             return cards;
         }
 
-        public User GetUser(string username, string pwd)
+        public User GetUser(string username)
         {
             NpgsqlConnection connection = SetConnect();
-            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM usertable WHERE username = @a AND password = @b;", connection);
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM usertable WHERE username = @a;", connection);
             cmd.Parameters.AddWithValue("a", username);
-            cmd.Parameters.AddWithValue("b", pwd);
+            //cmd.Parameters.AddWithValue("b", pwd);
             cmd.Prepare();
 
             NpgsqlDataReader reader = cmd.ExecuteReader();

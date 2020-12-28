@@ -86,7 +86,7 @@ namespace MTCG.Server
             string answerString =
                         "HTTP/1.1 200 OK \n" +
                         "Server: MTCG \n" +
-                        "Content-Length:" + response.Length + " \n" +
+                        "Content-Length: " + response.Length + " \n" +
                         "Content-Language: de \n" +
                         "Connection: open \n" +
                         "Keep-Alive: timeout=50, max=0 \n" +

@@ -39,8 +39,12 @@ namespace MTCG
             this.num_games = games;
         }
 
+
+        //this function can be changed in the future, but it should not make a big difference
         public string SetSessionToken(string username, string pwd) {
-            string sessionToken = username + pwd + "-mtcgToken";
+            DateTime dateToDisplay = DateTime.Now;
+
+            string sessionToken = username + pwd + "-mtcgToken"+ dateToDisplay.Second.ToString();
             this.sessionToken = sessionToken;
             return sessionToken;
         }
