@@ -138,8 +138,6 @@ namespace MTCG.Server
                             }
                             break;
                     }
-
-
                     break;
                 case "cards":
                     //DONE
@@ -213,6 +211,32 @@ namespace MTCG.Server
                 case "score":
 //TO-DO High and easy
                     //show scoreboard = GET score
+                    switch (request)
+                    {
+                        case "GET":
+                            if (CheckAuthenticity(headers))
+                            {
+                                try
+                                {
+                                    response = Tuple.Create(ScoreBoard(), "ALIVE");
+                                }
+                                catch (Exception)
+                                {
+                                    response = Tuple.Create("{\n" +
+                                                            "\"Query\": \"Unsuccessful\"\n" +
+                                                            "\"Error\": \"Could Not Fetch\"\n" +
+                                                            "}", "ALIVE");
+                                }
+                            }
+                            else
+                            {
+                                response = Tuple.Create("{\n" +
+                                                        "\"Query\": \"Unsuccessful\"\n" +
+                                                        "\"Error\": \"WrongToken\"\n" +
+                                                        "}", "EXIT");
+                            }
+                            break;
+                    }
                     break;
                 case "tradings":
 //TO-DO High
@@ -643,6 +667,40 @@ namespace MTCG.Server
             }
 
             return response;
+        }
+
+        private string ScoreBoard()
+        {
+            List<User> userList = DB.GetScoreBoard();
+            string comma = "";
+            if (userList.Count > 0) comma = ",";
+            string score = "{\n" +
+                "\"Query\": \"Success\",\n" +
+                "\"UserNum\": \"" + userList.Count + "\""+comma+"\n";
+
+            
+            for (int i = 0; i < userList.Count; i++)
+            {
+                float winLoss = 0;
+                if(userList[i].win != 0 && userList[i].loss != 0)
+                {
+                    winLoss = userList[i].win / userList[i].loss;
+                }
+
+
+                score += "\"User\":\n"+
+                    "{\n" +
+                    "\"Rank\": \"" + (i + 1).ToString() + "\"," +
+                    "\"Username\": \"" + userList[i].username + "\",\n"+
+                    "\"Elo\": \"" + userList[i].elo + "\",\n" +
+                    "\"NumGames\": \"" + userList[i].num_games + "\",\n" +
+                    "\"WinLoss\": \"" + winLoss + "\"\n";
+                if (i + 1 <= userList.Count)
+                    score += "},\n";
+            }
+            score += "}";
+
+            return score;
         }
     }
 }

@@ -40,7 +40,7 @@ namespace MTCG
             this.elo = elo;
             this.num_games = games;
             this.loss = losses;
-            win = wins;
+            this.win = wins;
     }
 
 

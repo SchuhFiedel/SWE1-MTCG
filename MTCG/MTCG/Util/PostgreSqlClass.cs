@@ -278,5 +278,45 @@ namespace MTCG.Util
                 return "NULL";
             }
         }
+
+        public List<User> GetScoreBoard()
+        {
+            List<User> userList = new List<User>();
+
+            NpgsqlConnection connection = SetConnect();
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM usertable ORDER BY elo DESC;", connection);
+            cmd.Prepare();
+
+            NpgsqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                if (reader.IsDBNull(6) && reader.IsDBNull(7))
+                {
+                    userList.Add(new User(reader.GetString(1), reader.GetString(2), "", "",
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9)));
+                }
+                else if (reader.IsDBNull(6))
+                {
+                    userList.Add(new User(reader.GetString(1), reader.GetString(2), "", reader.GetString(7),
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9)));
+                }
+                else if (reader.IsDBNull(7))
+                {
+                    userList.Add(new User(reader.GetString(1), reader.GetString(2), reader.GetString(6), "",
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9)));
+                }
+                else
+                {
+                    userList.Add(new User(reader.GetString(1), reader.GetString(2), reader.GetString(6), reader.GetString(7),
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9)));
+                }
+                
+            }
+
+            reader.Close();
+            connection.Close();
+            return userList;
+        }
     }
 }
