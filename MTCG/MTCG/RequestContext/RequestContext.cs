@@ -13,7 +13,6 @@ namespace MTCG.Server
     {
         PostgreSqlClass DB = new PostgreSqlClass();
         User user = new User();
-        List<Card> userCardStack = new List<Card>();
         string authentication = "";
 
         public Tuple<string, string> Context(string data, List<string> messages)
@@ -47,7 +46,7 @@ namespace MTCG.Server
                         case "GET":
                             //DONE
                             //Send back all user information 
-                            if (CheckAuthenticity(allData.Item2, headers))
+                            if (CheckAuthenticity(headers))
                             {
                                 response = Tuple.Create(GetUserInfo(user), "ALIVE");
                             }else
@@ -61,7 +60,7 @@ namespace MTCG.Server
                         case "PUT":
                             //DONE
                             //reponse = Change Success / No Success 
-                            if (CheckAuthenticity(allData.Item2, headers))
+                            if (CheckAuthenticity(headers))
                             {
                                 if (ChangeUserInfo(user,allData.Item2,tokens[2]))
                                 {
@@ -101,6 +100,8 @@ namespace MTCG.Server
                         //Logout = DELETE sessions -> delete token in DB, end connection to client, close client, close Handler Thread
                         case "DELETE":
                             break;
+                        default:
+                            break;
                     }
 
                     break;
@@ -118,23 +119,60 @@ namespace MTCG.Server
                     switch (request)
                     {
                         case "GET":
-
-                            userCardStack = DB.GetAllUserCards(user);
-                            string serialCards = SerializeCards(userCardStack);
-                            response = Tuple.Create(serialCards, "ALIVE");
+                            if (CheckAuthenticity(headers))
+                            {
+                                List<Card> userCardStack = DB.GetAllUserCards(user.user_id);
+                                string serialCards = SerializeCards(userCardStack);
+                                response = Tuple.Create(serialCards, "ALIVE");
+                            }
+                            else
+                            {
+                                response = Tuple.Create("{\n" +
+                                                        "\"CardFetch\": \"Unsuccessful\",\n" +
+                                                        "\"Error\": \"WrongToken\"\n" +
+                                                        "}", "EXIT");
+                            }
+                             break;
+                        default:
                             break;
                     }
                     break;
-                case "deck":
+                case "decks":
                     //TO-DO
                     //show deck of user = GET deck; config deck = PUT deck
                     switch (request)
                     {
                         case "GET":
                             //response = GetUserDeckCards();
+                            if (CheckAuthenticity(headers))
+                            {
+                                List<Card> userCardDeck = DB.GetUserDeckCards(user.user_id);
+                                string serialCards = SerializeCards(userCardDeck);
+                                response = Tuple.Create(serialCards, "ALIVE");
+                            }
+                            else
+                            {
+                                response = Tuple.Create("{\n" +
+                                                        "\"CardFetch\": \"Unsuccessful\",\n" +
+                                                        "\"Error\": \"WrongToken\"\n" +
+                                                        "}", "EXIT");
+                            }
                             break;
                         case "PUT":
                             //response = AddCardsToUserDeck();
+                            if (CheckAuthenticity(headers))
+                            {
+                                response = AddCardsToUserDeck(user, allData.Item2);
+                            }
+                            else
+                            {
+                                response = Tuple.Create("{\n" +
+                                                        "\"DeckChange\": \"Unsuccessful\",\n" +
+                                                        "\"Error\": \"WrongToken\"\n" +
+                                                        "}", "EXIT");
+                            }
+                            break;
+                        default:
                             break;
                     }
                     break;
@@ -184,7 +222,7 @@ namespace MTCG.Server
         }
 
         //Check if authentication token is the same as saved for this login
-        private bool CheckAuthenticity(string payload, Dictionary<string, string> headers)
+        private bool CheckAuthenticity(Dictionary<string, string> headers)
         {
             string info;
             if (!headers.TryGetValue("Authentication", out info))
@@ -351,12 +389,12 @@ namespace MTCG.Server
             }
 
             userInfo = "{\n" +
-                        "\"Query\": \"Success\"\n" +
-                        "\"Username\": \"" + userData[0] + "\"\n" +
-                        "\"Bio\": \"" + userData[1] + "\"\n" +
-                        "\"Image\": \"" + userData[2] + "\"\n" +
-                        "\"Coins\": \"" + userData[3] + "\"\n" +
-                        "\"Elo\": \"" + userData[4] + "\"\n" +
+                        "\"Query\": \"Success\",\n" +
+                        "\"Username\": \"" + userData[0] + "\",\n" +
+                        "\"Bio\": \"" + userData[1] + "\",\n" +
+                        "\"Image\": \"" + userData[2] + "\",\n" +
+                        "\"Coins\": \"" + userData[3] + "\",\n" +
+                        "\"Elo\": \"" + userData[4] + "\",\n" +
                         "\"Number-of-games\": \"" + userData[5] + "\"\n" +
                         "}";
 
@@ -413,23 +451,91 @@ namespace MTCG.Server
 
         private string SerializeCards(List<Card> cardList)
         {
-            string response = "{\n\"CardNum\":\""+cardList.Count+"\",\n";
+            string comma = "";
+            if (cardList.Count > 0) comma = ",";
+            string response = "{\n\"CardNum\":\""+cardList.Count+"\"" + comma + "\n";
             for(int i = 0; i<cardList.Count; i++)
             {
                 response += "\"Card\":\n";
                 response += "{\n";
+                response += "\"CardId\": \"" + cardList[i].GetCardId().ToString() + "\",\n";
                 response += "\"CardName\": \""+ cardList[i].GetCardName() + "\",\n";
                 response += "\"CardInfo\": \"" + cardList[i].GetCardInfo() + "\",\n";
                 response += "\"CardType\": \"" + cardList[i].GetCardType() + "\",\n";
-                response += "\"CardSpecial\": \"" + cardList[i].GetSpecial() + "\",\n";
-                response += "\"CardHP\": \"" + cardList[i].GetHP() + "\",\n";
-                response += "\"CardAP\": \"" + cardList[i].GetAP() + "\",\n";
-                response += "\"CardDP\": \"" + cardList[i].GetDP() + "\",\n";
-                response += "\"CardPiercing\": \"" + cardList[i].GetPiercing() + "\",\n";
-                response += "}\n";
+                response += "\"CardSpecial\": \"" + cardList[i].GetSpecial().ToString() + "\",\n";
+                response += "\"CardHP\": \"" + cardList[i].GetHP().ToString() + "\",\n";
+                response += "\"CardAP\": \"" + cardList[i].GetAP().ToString() + "\",\n";
+                response += "\"CardDP\": \"" + cardList[i].GetDP().ToString() + "\",\n";
+                response += "\"CardPiercing\": \"" + cardList[i].GetPiercing().ToString() + "\"\n";
+                response += "},\n";
             }
             response += "}";
                                  
+            return response;
+        }
+
+        private Tuple<string, string> AddCardsToUserDeck(User user, string info)
+        {
+            Tuple<string, string> response;
+            int cardID = -1;
+            bool hasCard = false;
+
+            List<Card> cards = DB.GetAllUserCards(user.user_id);
+
+            info = RemoveUnnecessaryChars(info);
+
+            string[] attr = info.Split(',');
+
+            for (int i = 0; i < attr.Length; i++)
+            {
+                string[] rowinfo = attr[i].Split(':');
+                if (rowinfo[0] == "CardId") { cardID = Int32.Parse(rowinfo[1]); }
+            }
+
+            foreach( Card x in cards)
+            {
+                if(x.GetCardId() == cardID)
+                {
+                    hasCard = true;
+                    break;
+                }
+            }
+
+            if (hasCard)
+            {
+                try
+                {
+                    if(DB.AddCardToDeck(user.user_id, cardID))
+                    {
+                        response = Tuple.Create("{\n" +
+                                "\"DeckChange\": \"Success\"\n" +
+                                "}", "ALIVE");
+                    }
+                    else
+                    {
+                        response = Tuple.Create("{\n" +
+                                "\"DeckChange\": \"Unsuccessful\",\n" +
+                                "\"ERROR\": \"Card Already In Deck!\"" +
+                                "}", "ALIVE");
+                    }
+
+                }
+                catch (Npgsql.PostgresException e)
+                {
+                    //catch DB exception
+                    response = Tuple.Create("{\n" +
+                                "\"Login\": \"Unsuccessful\",\n" +
+                                "\"DB-Exception\": \"" + e.Message + "\"\n" +
+                                "}", "ALIVE");
+                }
+            }
+            else
+            {
+                response = Tuple.Create("{\n" +
+                                "\"DeckChange\": \"Unsuccessful\",\n" +
+                                "\"ERROR\": \"Does Not Own Deck!\"" +
+                                "}", "ALIVE");
+            }
             return response;
         }
     }

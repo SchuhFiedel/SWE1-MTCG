@@ -86,7 +86,7 @@ namespace MTCG.Util
             return cards;
         }
 
-        public List<Card> GetAllUserCards(User user)
+        public List<Card> GetAllUserCards(int userID)
         {
             List<Card> cards = new List<Card>();
 
@@ -94,7 +94,7 @@ namespace MTCG.Util
             NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM cards " +
                                                   "INNER JOIN cardstacks on card_id = i_cid " +
                                                   "WHERE user_id = @a;", connection);
-            cmd.Parameters.AddWithValue("a", user.user_id);
+            cmd.Parameters.AddWithValue("a", userID);
             cmd.Prepare();
             NpgsqlDataReader reader = cmd.ExecuteReader();
 
@@ -116,6 +116,79 @@ namespace MTCG.Util
             connection.Close();
             Console.WriteLine("Got all them cards Mate!");
             return cards;
+        }
+
+        public List<Card> GetUserDeckCards(int userID)
+        {
+            List<Card> deck = new List<Card>(4);
+
+            NpgsqlConnection connection = SetConnect();
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM cards " +
+                                                  "INNER JOIN carddecks on card_id = i_cid " +
+                                                  "WHERE user_id = @a;", connection);
+            cmd.Parameters.AddWithValue("a", userID);
+            cmd.Prepare();
+            NpgsqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Card tmp = new Card(reader.GetInt32(0), //CardID
+                                    reader.GetString(1), //Cardname
+                                    reader.GetString(2), //CardInfo
+                                    (CardTypes)Convert.ToInt32(reader.GetBoolean(3)), //CardType
+                                    (ElementTypes)reader.GetInt32(4), //ElementType
+                                    (SpecialTypes)reader.GetInt32(5), //SpecialType
+                                    reader.GetInt32(6), //MaxHP
+                                    reader.GetInt32(7), //MaxAP
+                                    reader.GetInt32(8), //MaxDP
+                                    reader.GetBoolean(9)); //piercing
+                deck.Add(tmp);
+            }
+            reader.Close();
+            connection.Close();
+            Console.WriteLine("Got all them cards Mate!");
+
+            return deck;
+        }
+
+        public bool AddCardToDeck(int userID, int cardID)
+        {
+            try
+            {
+                int cardsInDeck = 0;
+                NpgsqlConnection connection = SetConnect();
+                NpgsqlCommand cmd = new NpgsqlCommand("SELECT Count(*) FROM carddecks WHERE user_id = @user_id;", connection);
+                cmd.Parameters.AddWithValue("@user_id", userID);
+                cmd.Prepare();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    cardsInDeck = reader.GetInt32(0);
+                }
+                reader.Close();
+                connection.Close();
+
+                if(cardsInDeck <= 4)
+                {
+                    connection = SetConnect();
+                    cmd = new NpgsqlCommand("INSERT into carddecks values(@user_id,@card_id);", connection);
+                    cmd.Parameters.AddWithValue("@user_id", userID);
+                    cmd.Parameters.AddWithValue("@card_id", cardID);
+                    cmd.Prepare();
+                    cmd.ExecuteNonQuery();
+                    connection.Close();
+                }
+                else
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public User GetUser(string username)

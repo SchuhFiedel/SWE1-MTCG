@@ -92,7 +92,7 @@ namespace MTCG.Server
                         "Keep-Alive: timeout=50, max=0 \n" +
                         "Access-Control-Allow-Origin: *\n" +
                         "Access-Control-Allow-Credentials: true\n" +
-                        "Content-Type: text/plain\n" +
+                        "Content-Type: application/json\n" +
                         "\n" + response;
 
             Byte[] reply = Encoding.ASCII.GetBytes(answerString);

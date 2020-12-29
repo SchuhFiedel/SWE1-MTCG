@@ -57,6 +57,7 @@ namespace MTCG.Cards
         public SpecialTypes GetSpecial() { return specialType; }
         public string GetCardName() { return cardName; }
         public string GetCardInfo() { return cardInfo; }
+        public int GetCardId() { return cardID; }
         public int GetHP() { return healthPoints; }
         public int GetAP() { return attackPoints; }
         public int GetDP() { return defensePoints; }
