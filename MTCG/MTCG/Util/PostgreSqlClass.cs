@@ -47,8 +47,8 @@ namespace MTCG.Util
         {
             NpgsqlConnection connection = SetConnect();
 
-            NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO usertable (username, password, coins, elo, num_games) " +
-                "VALUES (@a,@b,20,0,0);", connection);
+            NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO usertable (username, password, coins, elo, num_games, loss, win) " +
+                "VALUES (@a,@b,20,0,0,0,0);", connection);
 
             cmd.Parameters.AddWithValue("a", username);
             cmd.Parameters.AddWithValue("b", pwd);
@@ -210,22 +210,22 @@ namespace MTCG.Util
                 if (reader.IsDBNull(6) && reader.IsDBNull(7))
                 {
                     user = new User(reader.GetString(1), reader.GetString(2), "","",
-                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5));
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9));
                 }
                 else if (reader.IsDBNull(6))
                 {
                     user = new User(reader.GetString(1), reader.GetString(2), "", reader.GetString(7),
-                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5));
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9));
                 }
                 else if (reader.IsDBNull(7))
                 {
                     user = new User(reader.GetString(1), reader.GetString(2), reader.GetString(6),"",
-                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5));
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9));
                 }
                 else
                 {
                     user = new User(reader.GetString(1), reader.GetString(2), reader.GetString(6), reader.GetString(7),
-                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5));
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9));
                 }
 
                 reader.Close();

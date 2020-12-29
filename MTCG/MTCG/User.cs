@@ -15,18 +15,20 @@ namespace MTCG
         public int coins = -1;
         public int elo = -1;
         public int num_games = -1;
+        public int loss = -1;
+        public int win = -1;
 
         private string sessionToken = "";
 
         public User()
         {}
 
-        public User(string usr, string pwd, string info, string img, int id, int coins, int elo, int games)
+        public User(string usr, string pwd, string info, string img, int id, int coins, int elo, int games, int losses, int wins)
         {
-            SetAll(usr, pwd, info, img, id, coins, elo, games);
+            SetAll(usr, pwd, info, img, id, coins, elo, games, losses, wins);
         }
 
-        public void SetAll(string usr, string pwd, string info, string img, int id, int coins, int elo, int games)
+        public void SetAll(string usr, string pwd, string info, string img, int id, int coins, int elo, int games, int losses, int wins)
         {
             this.username = usr;
             this.password = pwd;
@@ -37,7 +39,9 @@ namespace MTCG
             this.coins = coins;
             this.elo = elo;
             this.num_games = games;
-        }
+            this.loss = losses;
+            win = wins;
+    }
 
 
         //this function can be changed in the future, but it should not make a big difference

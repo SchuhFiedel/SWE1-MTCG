@@ -88,7 +88,7 @@ namespace MTCG.Server
 
                 case "sessions":
                     //TO-DO
-                    //login = POST sessions, logour = DELETE sessions 
+                    //login = POST sessions, logout = DELETE sessions 
                     switch (request)
                     {
                         //DONE
@@ -103,18 +103,18 @@ namespace MTCG.Server
                         default:
                             break;
                     }
-
                     break;
                 case "packages":
                     //TO-DO
-                    //create = POST packages, ONLY IF ADMIN
+                    //see all packages = GET Packages
                     break;
                 case "transactions":
                     //TO-DO
                     //buy = POST transactions/packages
+                    //buy Coins = POST transactions/coins
                     break;
                 case "cards":
-                    //TO-DO
+                    //DONE
                     //show all of user = GET cards
                     switch (request)
                     {
@@ -138,11 +138,12 @@ namespace MTCG.Server
                     }
                     break;
                 case "decks":
-                    //TO-DO
+                    //DONE
                     //show deck of user = GET deck; config deck = PUT deck
                     switch (request)
                     {
                         case "GET":
+                            //DONE
                             //response = GetUserDeckCards();
                             if (CheckAuthenticity(headers))
                             {
@@ -153,12 +154,13 @@ namespace MTCG.Server
                             else
                             {
                                 response = Tuple.Create("{\n" +
-                                                        "\"CardFetch\": \"Unsuccessful\",\n" +
+                                                        "\"Query\": \"Unsuccessful\",\n" +
                                                         "\"Error\": \"WrongToken\"\n" +
                                                         "}", "EXIT");
                             }
                             break;
                         case "PUT":
+                            //DONE
                             //response = AddCardsToUserDeck();
                             if (CheckAuthenticity(headers))
                             {
@@ -178,15 +180,18 @@ namespace MTCG.Server
                     break;
                 case "stats":
                     //TO-DO
-                    //show user stats = GET stats;
+                    //show user stats = GET stats; //same as get user but less info
                     break;
                 case "score":
+                    //TO-DO
                     //show scoreboard = GET score
                     break;
                 case "tradings":
+                    //TO-DO
                     //show all tradings = GET tradings; trade = POST tradings, delete deal = DELETE tradings/tradeID
                     break;
                 case "battle":
+                    //TO-DO
                     //go to matchmaking and fight = POST battles
                     break;
                 default:
@@ -370,6 +375,8 @@ namespace MTCG.Server
         private string GetUserInfo(User user)
         {
             string userInfo = "";
+
+
             List<string> userData = new List<string>
             {
                 user.username,
@@ -377,8 +384,16 @@ namespace MTCG.Server
                 user.image,
                 user.coins.ToString(),
                 user.elo.ToString(),
-                user.num_games.ToString()
+                user.num_games.ToString(),
+                user.win.ToString(),
+                user.loss.ToString(),
+                0.ToString()
             };
+
+            if (user.win != 0 && user.loss != 0)
+            {
+                userData.Add(((float)(user.win / user.loss)).ToString());
+            }
 
             for (int i = 0; i < userData.Count; i++)
             {
@@ -395,7 +410,10 @@ namespace MTCG.Server
                         "\"Image\": \"" + userData[2] + "\",\n" +
                         "\"Coins\": \"" + userData[3] + "\",\n" +
                         "\"Elo\": \"" + userData[4] + "\",\n" +
-                        "\"Number-of-games\": \"" + userData[5] + "\"\n" +
+                        "\"Number-of-games\": \"" + userData[5] + "\",\n" +
+                        "\"Wins\": \""+userData[6]+"\",\n" +
+                        "\"Losses\": \"" + userData[7] + "\",\n" +
+                        "\"K/D\": \"" + userData[8] + "\"\n" +
                         "}";
 
             return userInfo;
@@ -453,7 +471,9 @@ namespace MTCG.Server
         {
             string comma = "";
             if (cardList.Count > 0) comma = ",";
-            string response = "{\n\"CardNum\":\""+cardList.Count+"\"" + comma + "\n";
+            string response = "{\n" +
+                "\"Query\": \"Success\",\n" + 
+                "\"CardNum\":\""+cardList.Count+"\"" + comma + "\n";
             for(int i = 0; i<cardList.Count; i++)
             {
                 response += "\"Card\":\n";
@@ -467,6 +487,7 @@ namespace MTCG.Server
                 response += "\"CardAP\": \"" + cardList[i].GetAP().ToString() + "\",\n";
                 response += "\"CardDP\": \"" + cardList[i].GetDP().ToString() + "\",\n";
                 response += "\"CardPiercing\": \"" + cardList[i].GetPiercing().ToString() + "\"\n";
+                if(i+1 <= cardList.Count)
                 response += "},\n";
             }
             response += "}";
