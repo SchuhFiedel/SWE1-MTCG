@@ -29,7 +29,10 @@ namespace MTCG.Server
 
             Console.WriteLine(data);
 
-            Tuple<string, string> response = Tuple.Create("CONNECTION CLOSED!", "EXIT");
+            Tuple<string, string> response = Tuple.Create("{\n" +
+                                                          "\"Connection\": \"Closed\",\n" +
+                                                          "\"Error\": \"Input\"\n" +
+                                                          "}", "EXIT");
 
             switch (tokens[1])
             {
@@ -85,9 +88,8 @@ namespace MTCG.Server
                             break;
                     }
                     break;
-
                 case "sessions":
-                    //TO-DO
+//TO-DO
                     //login = POST sessions, logout = DELETE sessions 
                     switch (request)
                     {
@@ -96,20 +98,21 @@ namespace MTCG.Server
                         case "POST":
                             response = LoginUser(allData.Item2);
                             break;
-                        //TO-DO
+//TO-DO
                         //Logout = DELETE sessions -> delete token in DB, end connection to client, close client, close Handler Thread
                         case "DELETE":
+                            response = LogoutUser(headers);
                             break;
                         default:
                             break;
                     }
                     break;
                 case "packages":
-                    //TO-DO
+//TO-DO
                     //see all packages = GET Packages
                     break;
                 case "transactions":
-                    //TO-DO
+//TO-DO
                     //buy = POST transactions/packages
                     //buy Coins = POST transactions/coins
                     break;
@@ -179,19 +182,19 @@ namespace MTCG.Server
                     }
                     break;
                 case "stats":
-                    //TO-DO
+//TO-DO
                     //show user stats = GET stats; //same as get user but less info
                     break;
                 case "score":
-                    //TO-DO
+//TO-DO
                     //show scoreboard = GET score
                     break;
                 case "tradings":
-                    //TO-DO
+//TO-DO
                     //show all tradings = GET tradings; trade = POST tradings, delete deal = DELETE tradings/tradeID
                     break;
                 case "battle":
-                    //TO-DO
+//TO-DO
                     //go to matchmaking and fight = POST battles
                     break;
                 default:
@@ -556,6 +559,27 @@ namespace MTCG.Server
                                 "\"DeckChange\": \"Unsuccessful\",\n" +
                                 "\"ERROR\": \"Does Not Own Deck!\"" +
                                 "}", "ALIVE");
+            }
+            return response;
+        }
+
+        private Tuple<string, string> LogoutUser(Dictionary<string,string> headers)
+        {
+            Tuple<string, string> response;
+
+            try
+            {
+                DB.Insert("DELETE FROM validtokens WHERE token = \'" + authentication + "\';");
+                response = new Tuple<string, string>("{\n" +
+                                                    "\"Logout\": \"Success\"\n" +
+                                                    "}", "EXIT");
+            }
+            catch
+            {
+                response = new Tuple<string, string>("{\n" +
+                                                    "\"Logout\": \"Unsuccessful\",\n" +
+                                                    "\"Error\": \"WrongToken\"\n" +
+                                                    "}", "ALIVE");
             }
             return response;
         }
