@@ -89,7 +89,7 @@ namespace MTCG.Server
                     }
                     break;
                 case "sessions":
-//TO-DO
+                    //DONE
                     //login = POST sessions, logout = DELETE sessions 
                     switch (request)
                     {
@@ -98,7 +98,7 @@ namespace MTCG.Server
                         case "POST":
                             response = LoginUser(allData.Item2);
                             break;
-//TO-DO
+                        //DONE
                         //Logout = DELETE sessions -> delete token in DB, end connection to client, close client, close Handler Thread
                         case "DELETE":
                             response = LogoutUser(headers);
@@ -108,13 +108,38 @@ namespace MTCG.Server
                     }
                     break;
                 case "packages":
-//TO-DO
+//TO-DO Low priority
                     //see all packages = GET Packages
                     break;
                 case "transactions":
-//TO-DO
-                    //buy = POST transactions/packages
-                    //buy Coins = POST transactions/coins
+                    //DONE
+                    //buy Packages = POST transactions/packages
+                    switch (request)
+                    {
+                        case "POST":
+                            if (CheckAuthenticity(headers))
+                            {
+                                if (tokens[2] == "packages")     //buy = POST transactions/packages
+                                {
+                                    //buy packages
+                                }
+                                else if (tokens[2] == "coins") //buy Coins = POST transactions/coins
+                                {
+                                    //buy coin 
+                                    response = BuyCoins(user.user_id,allData.Item2);
+                                }
+                            }
+                            else
+                            {
+                                response = Tuple.Create("{\n" +
+                                                        "\"Query\": \"Unsuccessful\"\n" +
+                                                        "\"Error\": \"WrongToken\"\n" +
+                                                        "}", "EXIT");
+                            }
+                            break;
+                    }
+
+
                     break;
                 case "cards":
                     //DONE
@@ -182,19 +207,19 @@ namespace MTCG.Server
                     }
                     break;
                 case "stats":
-//TO-DO
+//TO-DO High and easy
                     //show user stats = GET stats; //same as get user but less info
                     break;
                 case "score":
-//TO-DO
+//TO-DO High and easy
                     //show scoreboard = GET score
                     break;
                 case "tradings":
-//TO-DO
+//TO-DO High
                     //show all tradings = GET tradings; trade = POST tradings, delete deal = DELETE tradings/tradeID
                     break;
                 case "battle":
-//TO-DO
+//TO-DO High
                     //go to matchmaking and fight = POST battles
                     break;
                 default:
@@ -581,6 +606,42 @@ namespace MTCG.Server
                                                     "\"Error\": \"WrongToken\"\n" +
                                                     "}", "ALIVE");
             }
+            return response;
+        }
+
+        private Tuple<string, string> BuyCoins(int userID, string payload)
+        {
+            Tuple<string, string> response;
+            string amount = "0";
+            payload = RemoveUnnecessaryChars(payload);
+
+            string[] attr = payload.Split(',');
+
+            for (int i = 0; i < attr.Length; i++)
+            {
+                string[] rowinfo = attr[i].Split(':');
+                if (rowinfo[0] == "BuyAmount") { amount = rowinfo[1]; break; }
+            }
+
+            try
+            {
+                //get user info from DB
+                DB.Insert("UPDATE usertable SET coins = coins+"+ amount +" WHERE user_id = "+ userID+";");
+                
+
+                response = Tuple.Create("{\n" +
+                                        "\"BuyCoins\": \"Success\"\n" +
+                                        "}", "ALIVE");
+            }
+            catch (Npgsql.PostgresException e)
+            {
+                //catch DB exception
+                response = Tuple.Create("{\n" +
+                            "\"BuyCoins\": \"Unsuccessful\",\n" +
+                            "\"DB-Exception\": \"" + e.Message + "\"\n" +
+                            "}", "ALIVE");
+            }
+
             return response;
         }
     }
