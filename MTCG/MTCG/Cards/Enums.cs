@@ -35,15 +35,15 @@ namespace MTCG.Cards
     }
 
     /// <summary>
-    /// Dragon -> Goblin can not attack, can not attack FireElf
-    /// FireElf -> Dragon can not attack
-    /// Wizzard -> Ork can not attack
+    /// Dragon ->  can not attack FireElf (Can not be attacked by Goblin)
+    /// FireElf -> (Can not be attacked by Dragon)
+    /// Wizzard -> (Can not be attacked by Ork)
     /// Knight -> Dies if hit by water spell
     /// Kraken -> Immune to all spells
     /// Goblin -> can not attack Dragon
     /// Ork -> can not attack Wizzard
     /// </summary>
-    
+
     public enum SpecialTypes
     {
         None = 0,

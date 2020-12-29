@@ -77,17 +77,9 @@ namespace MTCG.Cards
         {
             double remAP = attacker.GetAP(); // remaining Attack Points
 
-            if (attacker.GetCardType() == CardTypes.Spell)
-            {
-                remAP = CheckBuffs(remAP, attacker);
 
-                if(this.specialType == SpecialTypes.Knight)
-                {
-                    Console.WriteLine("KNIGHT DIES INStaNTLY");
-                    this.healthPoints = 0;
-                    return;
-                }
-            }
+            remAP = CheckBuffs(remAP, attacker);
+
 
             // Dont deduct attack points because its piercing damage
             if (attacker.GetPiercing() == false){
@@ -126,21 +118,64 @@ namespace MTCG.Cards
 
         double CheckBuffs(double atp, Card attacker)
         {
-            //Buffs
-            if (attacker.GetElementType() == ElementTypes.Water && (this.elementType == ElementTypes.Fire || this.elementType == ElementTypes.Air)) { atp = Buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Fire && (this.elementType == ElementTypes.Normal || this.elementType == ElementTypes.Ice)) { atp = Buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Normal && (this.elementType == ElementTypes.Water || this.elementType == ElementTypes.Earth)) { atp = Buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Earth && (this.elementType == ElementTypes.Fire || this.elementType == ElementTypes.Ice)) { atp = Buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Ice && (this.elementType == ElementTypes.Electro || this.elementType == ElementTypes.Air)) { atp = Buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Electro && (this.elementType == ElementTypes.Normal || this.elementType == ElementTypes.Earth)) { atp = Buff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Air && this.elementType == ElementTypes.Electro) { atp = Buff(atp); }
 
-            //Debuffs
-            if (attacker.GetElementType() == ElementTypes.Water && this.elementType == ElementTypes.Ice) { atp = Debuff(atp); }
-            if (attacker.GetElementType() == ElementTypes.Fire && this.elementType == ElementTypes.Air) { atp = Debuff(atp); }
+            if(attacker.GetCardType() != CardTypes.Monster || this.GetCardType() != CardTypes.Monster)
+            {
+
+                //Buffs
+                /// - Water good vs Fire AND Air 
+                if (attacker.GetElementType() == ElementTypes.Water && (this.elementType == ElementTypes.Fire || this.elementType == ElementTypes.Air)) { atp = Buff(atp); }
+                /// - Fire good vs Normal AND Ice 
+                if (attacker.GetElementType() == ElementTypes.Fire && (this.elementType == ElementTypes.Normal || this.elementType == ElementTypes.Ice)) { atp = Buff(atp); }
+                /// - Normal good vs Water AND Earth
+                if (attacker.GetElementType() == ElementTypes.Normal && (this.elementType == ElementTypes.Water || this.elementType == ElementTypes.Earth)) { atp = Buff(atp); }
+                /// - Earth good vs Fire AND Ice
+                if (attacker.GetElementType() == ElementTypes.Earth && (this.elementType == ElementTypes.Fire || this.elementType == ElementTypes.Ice)) { atp = Buff(atp); }
+                /// - Ice good vs Electro AND Air
+                if (attacker.GetElementType() == ElementTypes.Ice && (this.elementType == ElementTypes.Electro || this.elementType == ElementTypes.Air)) { atp = Buff(atp); }
+                /// - Electro good vs normal AND Earth
+                if (attacker.GetElementType() == ElementTypes.Electro && (this.elementType == ElementTypes.Normal || this.elementType == ElementTypes.Earth)) { atp = Buff(atp); }
+                /// - Air good vs Electro
+                if (attacker.GetElementType() == ElementTypes.Air && this.elementType == ElementTypes.Electro) { atp = Buff(atp); }
+
+                //Spell-Monster Specials
+                /// Knight -> Dies if hit by water spell
+                if (attacker.GetCardType() == CardTypes.Spell && attacker.GetElementType() == ElementTypes.Water && this.GetSpecial() == SpecialTypes.Knight) { atp = 100; }
+                /// Kraken -> Immune to all spells
+                if (attacker.GetCardType() == CardTypes.Spell && this.GetSpecial() == SpecialTypes.Kraken) { atp = 0; }
+
+                //Debuffs
+                ///Water inefficient agains Ice
+                if (attacker.GetElementType() == ElementTypes.Water && this.elementType == ElementTypes.Ice) { atp = Debuff(atp); }
+                ///(Fire inefficient agains Air)
+                if (attacker.GetElementType() == ElementTypes.Fire && this.elementType == ElementTypes.Air) { atp = Debuff(atp); }
+
+            }
+            else
+            {
+                //Monser-Monster Specials
+                /// Ork -> can not attack Wizzard
+                if (attacker.GetSpecial() == SpecialTypes.Ork && this.GetSpecial() == SpecialTypes.Wizzard) { atp = 0; }
+                /// Goblin -> can not attack Dragon
+                if (attacker.GetSpecial() == SpecialTypes.Goblin && this.GetSpecial() == SpecialTypes.Dragon) { atp = 0; }
+                /// Dragon -> can not attack Fire Elves
+                if (attacker.GetSpecial() == SpecialTypes.Dragon && this.GetSpecial() == SpecialTypes.FireElf) { atp = 0; }
+            }
+
 
             return atp;
         }
 
+        public bool CheckAlive()
+        {
+            if(this.GetHP() >= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
