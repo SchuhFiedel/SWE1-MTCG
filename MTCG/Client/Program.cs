@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Net.Sockets;
-using System.Threading.Tasks;
-using System.Net.Http;
+using System.Collections.Generic;
 using MTCG;
 
 namespace Client
@@ -14,52 +13,94 @@ namespace Client
             Int32 port = 8000;
             string address = "127.0.0.1";
             string uri = "http://" + address + ":" + port;
-            
+            Console.BufferWidth = 100;
+            Console.SetWindowSize(Console.BufferWidth, 80);
+            //Console.WriteLine(System.Reflection.Assembly.GetEntryAssembly().Location);
+
             TcpClient t_client = new TcpClient(address, port);
             NetworkStream stream = t_client.GetStream();
+            ClientRequestHandler httpHandler = new ClientRequestHandler(t_client, stream);
 
-            string input = string.Empty;
+            string authenticationToken = "";
+            bool loggedIn = false;
 
+            int input = 0;
             do
             {
-                PrintMenu();
-                input = Console.ReadLine();
-
+                PrintMenu(loggedIn);
+                input = Int32.Parse(Console.ReadLine());
+                if(loggedIn == false && input > 2 && input != 20)
+                {
+                    Console.WriteLine("Please Log in or Register First!");
+                    input = 0;
+                }
                 switch (input)
                 {
-                    case "EXIT":
-                        Console.WriteLine("Ending Program!");
+                    case 1:
+                        //DONE
+                        Console.WriteLine("Register new User");
+                        httpHandler.HttpRequest(1, uri, stream, authenticationToken, loggedIn);
+                        break;
+                    case 2:
+                        //DONE
+                        Console.WriteLine("Login User!");
+                        httpHandler.HttpRequest(2, uri, stream, authenticationToken, loggedIn);
+                        break;
+                    case 3:
+                        //DONE
+                        Console.WriteLine("GET All User Info!");
+                        httpHandler.HttpRequest(3, uri, stream, authenticationToken, loggedIn);
+                        break;
+                    case 4:
+                        //DONE
+                        Console.WriteLine("Update User Info");
+                        httpHandler.HttpRequest(4, uri, stream, authenticationToken, loggedIn);
+                        break;
+                    case 5:
+                        //DONE
+                        Console.WriteLine("Buy More Coins");
+                        httpHandler.HttpRequest(5, uri, stream, authenticationToken, loggedIn);
+                        break;
+                    case 6:
+//TO-DO
+                        Console.WriteLine("Buy CardPackages");
+                        httpHandler.HttpRequest(6, uri, stream, authenticationToken, loggedIn);
+                        break;
+                    case 7:
+                        //DONE
+                        Console.WriteLine("Show all owned Cards");
+                        httpHandler.HttpRequest(7, uri, stream, authenticationToken, loggedIn);
+                        break;
+                    case 8:
+                        //DONE
+                        Console.WriteLine("Show User Deck");
+                        httpHandler.HttpRequest(8, uri, stream, authenticationToken, loggedIn);
+                        break;
+                    case 9:
+                        //DONE
+                        Console.WriteLine("Put Card In Deck");
+                        httpHandler.HttpRequest(9, uri, stream, authenticationToken, loggedIn);
+                        break;
+                    case 10:
+                        //DONE
+                        Console.WriteLine("Put Card In Deck");
+                        httpHandler.HttpRequest(10, uri, stream, authenticationToken, loggedIn);
+                        break;
+                    case 11:
+                        //TO-DO show all tradings = GET tradings; trade = POST tradings, delete deal = DELETE tradings/tradeID
+                        break;
+                    case 12:
+                        //TO-DO go to matchmaking and fight = POST battles
+                        break;
+                    case 20:
+                        Console.WriteLine("Logout And Close Program");
+                        httpHandler.HttpRequest(20, uri, stream, authenticationToken, loggedIn);
                         t_client.Close();
                         break;
-                    case "1":
-                        Console.WriteLine("Get ALL Messages!");
-                        HttpRequest("GET1", uri, stream);
-
-                        break;
-                    case "2":
-                        Console.WriteLine("Get Specific Message!");
-                        HttpRequest("GET2", uri, stream);
-
-                        break;
-                    case "3":
-                        Console.WriteLine("Post Message!");
-                        HttpRequest("POST", uri, stream);
-
-                        break;
-                    case "4":
-                        Console.WriteLine("Put Message!");
-                        HttpRequest("PUT", uri, stream);
-
-                        break;
-                    case "5":
-                        Console.WriteLine("Delete message!");
-                         HttpRequest("DELETE", uri, stream);
-
-                        break;
                     default:
+                        Console.WriteLine("Invalid Input!");
                         break;
                 }
-
                 if (t_client.Connected)
                 {
                     // Bytes Array to receive Server Response.
@@ -68,193 +109,129 @@ namespace Client
                     // Read the Tcp Server Response Bytes.
                     Int32 bytes = stream.Read(data, 0, data.Length);
                     response = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-                    Console.WriteLine("Received: {0}", response);
+
+                    string[] messageLines = response.Split('\n');
+                    string[] tokens = messageLines[0].Split(' '); // first row
+                    int rowcounter = SearchDataRow(messageLines); // find row where Header ends
+                    Tuple<string[], string> allData = SplitData(rowcounter, messageLines); // split messageLines in HeaderArray and Payload string
+                    Dictionary<string, string> headers = GetHeaders(allData.Item1); //Split Header Array into Dictinary with Attributes and Values
+
+                    if (!loggedIn)
+                    {
+                        Tuple<bool, string> auth = CheckAuthenticationData(allData.Item2);
+                        loggedIn = auth.Item1;
+                        authenticationToken = auth.Item2;
+                    }
+                    
+
+                    Console.WriteLine("Received:\n{0} \n\n", response);
                     //Thread.Sleep(2);
                 }
-
-            } while(input != "EXIT");
+            } while(input != 20);
             Console.ReadKey();
         }
 
+        //search for row in which the HTTP Payload is
+        private static int SearchDataRow(string[] messageLines)
+        {
+            int rowcounter = 0;
+            foreach (string x in messageLines)
+            {
+                rowcounter += 1;
+                if (x == "\r" || x == "\n" || x == "") // if any kind of new line, break
+                {
+                    break;
+                }
+            }
+            return rowcounter;
+        }
 
-        public static void PrintMenu()
+        //Make Json format strings more readable
+        private static string RemoveUnnecessaryChars(string info)
+        {
+            info = info.Replace("\n", "").Replace("\r", "").Replace("\t", "")
+                        .Replace("{", "").Replace("}", "").Replace(" \"", "").Replace("\"", "");
+            return info;
+        }
+
+        //Split data into Headers and Payload
+        private static Tuple<string[], string> SplitData(int rowcounter, string[] messageLines)
+        {
+            string[] a = new string[] { };
+            string b = "";
+            List<string> tmp = new List<string>();
+
+            for (int i = 0; i < rowcounter - 1; i++)
+            {
+                tmp.Add(messageLines[i].Replace(" ", ""));
+            }
+            for (int i = 0; i + rowcounter < messageLines.Length; i++)
+            {
+                b += messageLines[i + rowcounter];
+            }
+
+            a = tmp.ToArray();
+            Tuple<string[], string> addMessage = Tuple.Create(a, b);
+
+            return addMessage;
+        }
+
+        //get all headers into a dictionary
+        private static Dictionary<string, string> GetHeaders(string[] data)
+        {
+            Dictionary<string, string> Headers = new Dictionary<string, string>();
+
+            for (int i = 1; i < data.Length - 1; i++)
+            {
+                string[] tmp = data[i].Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "").Split(":");
+                Headers.Add(tmp[0], tmp[1]);
+            }
+            return Headers;
+        }
+
+        private static Tuple<bool,string> CheckAuthenticationData(string info)
+        {
+            info = RemoveUnnecessaryChars(info);
+            string[] attr = info.Split(',');
+
+            bool success = false;
+            string token = "";
+            for (int i = 0; i < attr.Length; i++)
+            {
+                string[] rowinfo = attr[i].Split(':');
+                if (rowinfo[0] == "Login" && rowinfo[1] == "Success") { success = true; }
+                if (rowinfo[0] == "Token") { token = rowinfo[1]; }
+            }
+
+            return Tuple.Create(success,token);
+
+        }
+
+        public static void PrintMenu(bool isLoggedIn)
         {
             
             Console.WriteLine("\n\n");
             Console.WriteLine("***************************************************************************");
-            Console.WriteLine("1) Get all messages");
-            Console.WriteLine("2) Get one messages");
-            Console.WriteLine("3) Send and save message on the Server");
-            Console.WriteLine("4) Update message (overwrite)");
-            Console.WriteLine("5) Delete message");
-            Console.WriteLine("EXIT) Close The Program");
+            Console.WriteLine("1 ) Register new User");
+            Console.WriteLine("2 ) Login User");
+            if (isLoggedIn)
+            {
+                Console.WriteLine("3 ) Get All User Infos (User Score)");
+                Console.WriteLine("4 ) Update User Information");
+                Console.WriteLine("5 ) Buy Coins");
+                Console.WriteLine("6 ) Buy CardPackages");
+                Console.WriteLine("7 ) Show all owned Cards");
+                Console.WriteLine("8 ) Show your current Deck");
+                Console.WriteLine("9 ) Add Owned Cards to your Deck");
+                Console.WriteLine("10) Show Score-Board");
+                Console.WriteLine("11) Trading Menu");
+                Console.WriteLine("12) Start Matchmaking");
+            }
+            Console.WriteLine("20) Logout and Close Program");
             Console.WriteLine("***************************************************************************");
             Console.WriteLine("\n");
         }
 
-        static void HttpRequest(string reqType, string uri, NetworkStream stream)
-        {
-            string  message = "";
-            string path = "/messages";
-
-            if(reqType == "GET1") { reqType = "GET"; }
-            else if(reqType == "GET2"){
-                reqType = "GET";
-                Console.WriteLine("Please Enter Message ID!");
-                path += "/" + Console.ReadLine();
-            }
-            else if (reqType == "POST"){
-                Console.WriteLine("Please Enter new Message!");
-                message = Console.ReadLine();
-            }
-            else if (reqType == "PUT"){
-                Console.WriteLine("Please Enter Message ID!");
-                path += "/" + Console.ReadLine();
-                Console.WriteLine("Please Enter new Message");
-                message = Console.ReadLine();
-            }
-            else if (reqType == "DELETE"){
-                Console.WriteLine("Please Enter Message ID!");
-                path += "/" + Console.ReadLine();
-            }
-            
-            string answerString = "";
-            if (message.Length == 0){
-                answerString =
-                        reqType + " " + path +" "+ "HTTP/1.1\n" +
-                        "Host: " + uri + "\n" +
-                        "Connection: keep-alive \n" +
-                        "Keep-Alive: timeout=50, max=0 \n" +
-                        "Access-Control-Allow-Origin: *\n" +
-                        "Access-Control-Allow-Credentials: true\n" +
-                        "Content-Type: text/plain; charset=utf-8\n";
-            }else{
-                answerString =
-                        reqType + " " + path + " " + "HTTP/1.1\n" +
-                        "Host: " + uri + "\n" +
-                        "Content-Length:" + message.Length + " \n" +
-                        "Content-Language: de \n" +
-                        "Connection: keep-alive \n" +
-                        "Keep-Alive: timeout=50, max=0 \n" +
-                        "Access-Control-Allow-Origin: *\n" +
-                        "Access-Control-Allow-Credentials: true\n" +
-                        "Content-Type: text/plain; charset=utf-8\n" +
-                        "\n" + message;
-            }
-            Byte[] reply = Encoding.ASCII.GetBytes(answerString);
-            try
-            {
-                stream.Write(reply, 0, reply.Length);
-                stream.Flush();
-                Console.WriteLine("Sent: \n {0}", answerString);
-            }
-            catch(System.IO.IOException e) {
-                Console.Write("Server ended connection!", e);
-            }
-        }
+        
     }
 }
-
-
-
-/*
-        static async Task GetAllMessages(HttpClient client, string uri)
-        {
-            string getStringReturn = await client.GetStringAsync(uri + "/messages");
-            Console.WriteLine(getStringReturn);
-        }
-
-        static async Task GetMessage(HttpClient client, string uri)
-        {
-            Console.WriteLine("Pleas Enter message ID!");
-            string input = Console.ReadLine();
-            string getStringReturn = await client.GetStringAsync(uri + "/messages/" + input);
-            Console.WriteLine(getStringReturn);
-        }
-
-        static async Task PostMessage(HttpClient client, string uri)
-        {
-            Console.WriteLine("Pleas Enter message!");
-            string input = Console.ReadLine();
-            HttpContent data = new StringContent(input, Encoding.UTF8, "text/plain");
-            HttpResponseMessage result = await client.PostAsync(uri + "/messages", data);
-            string s_result = result.Content.ReadAsStringAsync().Result;
-            Console.WriteLine(s_result);
-        }
-
-        static async Task PutMessage(HttpClient client, string uri)
-        {
-            Console.WriteLine("please Enter message ID!");
-            string id = Console.ReadLine();
-            Console.WriteLine("Please enter message!");
-            string message = Console.ReadLine();
-            HttpContent data = new StringContent(message, Encoding.UTF8, "text/plain");
-            HttpResponseMessage result = await client.PutAsync(uri + "/messages/" + id, data);
-            string s_result = result.Content.ReadAsStringAsync().Result;
-            Console.WriteLine(s_result);
-        }
-
-        static async Task DelMessage(HttpClient client, string uri)
-        {
-            Console.WriteLine("Please Enter message ID!");
-            string id = Console.ReadLine();
-            HttpResponseMessage result = await client.DeleteAsync(uri + "/messages/" + id);
-            string s_result = result.Content.ReadAsStringAsync().Result;
-            Console.WriteLine(s_result);
-        }
-*/
-
-
-/*
- *  string message = Console.ReadLine();
-    HttpContent data = new StringContent(message, Encoding.UTF8, "text/plain");
-
-    HttpResponseMessage postReturn = await client.PostAsync(uri, data);
-    string result = postReturn.Content.ReadAsStringAsync().Result;
-    var send = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, uri));
-    HttpResponseMessage getReturn = await client.GetAsync(uri + "messages/5");
-    string getStringReturn = await client.GetStringAsync(uri);
-    Console.WriteLine(postReturn);
-    Console.WriteLine(result);
-    Console.WriteLine(getReturn);
-Console.WriteLine(getStringReturn);
- * /
-
-/*
-static void Main(string[] args)
-{
-    try
-    {
-        Int32 port = 8000;
-        TcpClient client = new TcpClient("127.0.0.1", port);
-        NetworkStream stream = client.GetStream();
-        while (true)
-        {
-            string message = Console.ReadLine();
-            if (message == "0")
-            {
-                stream.Close();
-                client.Close();
-                break;
-            }
-            // Translate the Message into ASCII.
-            Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
-            // Send the message to the connected TcpServer. 
-            stream.Write(data, 0, data.Length);
-            Console.WriteLine("Sent: {0}", message);
-            // Bytes Array to receive Server Response.
-            data = new Byte[256];
-            String response = String.Empty;
-            // Read the Tcp Server Response Bytes.
-            Int32 bytes = stream.Read(data, 0, data.Length);
-            response = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-            Console.WriteLine("Received: {0}", response);
-            Thread.Sleep(2);   
-        }
-    }
-    catch (Exception e)
-    {
-        Console.WriteLine("Exception: {0}", e);
-    }
-    //Console.Read();
- }*/

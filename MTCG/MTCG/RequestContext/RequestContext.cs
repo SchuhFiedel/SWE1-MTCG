@@ -57,7 +57,7 @@ namespace MTCG.Server
                                 response = Tuple.Create("{\n" +
                                                         "\"Query\": \"Unsuccessful\"\n" +
                                                         "\"Error\": \"WrongToken\"\n" +
-                                                        "}", "EXIT");
+                                                        "}", "ALIVE");
                             }
                             break;
                         case "PUT":
@@ -70,6 +70,7 @@ namespace MTCG.Server
                                     response = Tuple.Create("{\n" +
                                                             "\"Change\": \"Success\"\n" +
                                                             "}", "ALIVE");
+                                    user = DB.GetUser(user.username); // update User Object
                                 }
                                 else
                                 {
@@ -107,13 +108,9 @@ namespace MTCG.Server
                             break;
                     }
                     break;
-                case "packages":
-//TO-DO Low priority
-                    //see all packages = GET Packages
-                    break;
                 case "transactions":
-                    //DONE
-                    //buy Packages = POST transactions/packages
+//TO-DO HIGH
+                    //buy Packages = POST transactions/packages // buy Coins = POST transactions/coins
                     switch (request)
                     {
                         case "POST":
@@ -127,6 +124,7 @@ namespace MTCG.Server
                                 {
                                     //buy coin 
                                     response = BuyCoins(user.user_id,allData.Item2);
+                                    user = DB.GetUser(user.username); // update user Object
                                 }
                             }
                             else
@@ -200,20 +198,18 @@ namespace MTCG.Server
                                                         "}", "EXIT");
                             }
                             break;
+                        case "DELETE":
+                            break;
                         default:
                             break;
                     }
                     break;
-                case "stats":
-//TO-DO High and easy
-                    //show user stats = GET stats; //same as get user but less info
-                    break;
                 case "score":
-//TO-DO High and easy
+                    //DONE
                     //show scoreboard = GET score
                     switch (request)
                     {
-                        case "GET":
+                        case "GET": //DONE
                             if (CheckAuthenticity(headers))
                             {
                                 try
@@ -410,7 +406,7 @@ namespace MTCG.Server
                 response = Tuple.Create("{\n" +
                             "\"Login\": \"Unsuccessful\",\n" +
                             "\"DB-Exception\": \"" + e.Message + "\"\n" +
-                            "}", "EXIT");
+                            "}", "ALIVE");
             }
             catch (Npgsql.PostgresException e)
             {
@@ -418,7 +414,7 @@ namespace MTCG.Server
                 response = Tuple.Create("{\n" +
                             "\"Login\": \"Unsuccessful\",\n" +
                             "\"DB-Exception\": \"" + e.Message + "\"\n" +
-                            "}", "EXIT");
+                            "}", "ALIVE");
             }
             return response;
         }
@@ -481,9 +477,9 @@ namespace MTCG.Server
 
             string[] attr = info.Split(','); // split info in attributes
 
-            string newUsername = "";
-            string newBio = "";
-            string newImage = "";
+            string newUsername = "-";
+            string newBio = "-";
+            string newImage = "-";
             for (int i = 0; i < attr.Length; i++)
             {
                 string[] rowinfo = attr[i].Split(':'); // split row into attr and values
@@ -496,6 +492,10 @@ namespace MTCG.Server
                 if (rowinfo[0] == "Bio") { newBio = rowinfo[1]; } // change Bio from payload
                 if (rowinfo[0] == "Image") { newImage = rowinfo[1]; } // change image from payload
             }
+
+            if(newBio == "-"){newBio = user.bio;}
+            if(newImage == "-") { newImage = user.image; }
+            if (newUsername == "-") { newImage = user.username; }
 
             try
             {   //Update New data in db
