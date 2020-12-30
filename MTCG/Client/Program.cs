@@ -62,7 +62,7 @@ namespace Client
                         httpHandler.HttpRequest(5, uri, stream, authenticationToken, loggedIn);
                         break;
                     case 6:
-//TO-DO
+                        //DONE
                         Console.WriteLine("Buy CardPackages");
                         httpHandler.HttpRequest(6, uri, stream, authenticationToken, loggedIn);
                         break;

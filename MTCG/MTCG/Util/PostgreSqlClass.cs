@@ -318,5 +318,23 @@ namespace MTCG.Util
             connection.Close();
             return userList;
         }
+
+        public List<int> GetPackageCardIds(int packageID)
+        {
+            List<int> cardIDs = new List<int>();
+
+            NpgsqlConnection connection = SetConnect();
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT card_id from packages WHERE pack_id = @p", connection);
+            cmd.Parameters.AddWithValue("p", packageID);
+            cmd.Prepare();
+            NpgsqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            { 
+                cardIDs.Add(reader.GetInt32(0));
+            }
+
+            return cardIDs;
+        }
     }
 }

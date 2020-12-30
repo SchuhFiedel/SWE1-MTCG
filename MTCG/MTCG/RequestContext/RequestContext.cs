@@ -109,7 +109,7 @@ namespace MTCG.Server
                     }
                     break;
                 case "transactions":
-//TO-DO HIGH
+                    //DONE
                     //buy Packages = POST transactions/packages // buy Coins = POST transactions/coins
                     switch (request)
                     {
@@ -119,6 +119,8 @@ namespace MTCG.Server
                                 if (tokens[2] == "packages")     //buy = POST transactions/packages
                                 {
                                     //buy packages
+                                    response = BuyPackages(user, allData.Item2);
+                                    user = DB.GetUser(user.username); // update user Object
                                 }
                                 else if (tokens[2] == "coins") //buy Coins = POST transactions/coins
                                 {
@@ -235,19 +237,17 @@ namespace MTCG.Server
                     }
                     break;
                 case "tradings":
-//TO-DO High
+//TO-DO not so High
                     //show all tradings = GET tradings; trade = POST tradings, delete deal = DELETE tradings/tradeID
                     break;
                 case "battle":
-//TO-DO High
+//TO-DO HIGH
                     //go to matchmaking and fight = POST battles
                     break;
                 default:
 
                     break;
             }
-
-
             return response;
         }
 
@@ -519,6 +519,7 @@ namespace MTCG.Server
             return success;
         }
 
+        //make all cards in card list to json format string
         private string SerializeCards(List<Card> cardList)
         {
             string comma = "";
@@ -547,6 +548,7 @@ namespace MTCG.Server
             return response;
         }
 
+        //add a card to deck of user
         private Tuple<string, string> AddCardsToUserDeck(User user, string info)
         {
             Tuple<string, string> response;
@@ -612,6 +614,7 @@ namespace MTCG.Server
             return response;
         }
 
+        //Logout user -> close connection to client, end thread, kill client
         private Tuple<string, string> LogoutUser(Dictionary<string,string> headers)
         {
             Tuple<string, string> response;
@@ -633,6 +636,7 @@ namespace MTCG.Server
             return response;
         }
 
+        //Microtransactions for the win
         private Tuple<string, string> BuyCoins(int userID, string payload)
         {
             Tuple<string, string> response;
@@ -669,6 +673,7 @@ namespace MTCG.Server
             return response;
         }
 
+        //get all scoreBoard infos in a string
         private string ScoreBoard()
         {
             List<User> userList = DB.GetScoreBoard();
@@ -702,80 +707,44 @@ namespace MTCG.Server
 
             return score;
         }
+
+        //User Buys Packages
+        private Tuple<string, string> BuyPackages(User user, string info)
+        {
+            Tuple<string, string> response;
+            int packageID = 0;
+
+            info = RemoveUnnecessaryChars(info);
+            string[] attr = info.Split(',');
+
+            for (int i = 0; i < attr.Length; i++)
+            {
+                string[] rowinfo = attr[i].Split(':');
+                if (rowinfo[0] == "PackageID") { packageID = Int32.Parse(rowinfo[1]); }
+            }
+
+            try
+            {
+                List<int> cardIDs = DB.GetPackageCardIds(packageID);
+                foreach (int x in cardIDs)
+                {
+                    DB.Insert("INSERT INTO cardstacks(user_id, card_id) values("+ user.user_id+ "," + x +");");
+                }
+                DB.Insert("UPDATE usertable SET coins = coins-10 WHERE user_id = " + user.user_id +";");
+
+                response = Tuple.Create("{\n" +
+                                        "\"BuyPackage\": \"Success\"\n" +
+                                        "}", "ALIVE");
+            }
+            catch (Npgsql.NpgsqlException e)
+            {
+                response = Tuple.Create("{\n" +
+                                        "\"BuyPackage\": \"Unsuccessful\",\n" +
+                                        "\"DB-Exception\": \"" + e.Message + "\"\n" +
+                                        "}", "ALIVE");
+            }
+
+            return response;
+        }
     }
 }
-
-
-/*
-switch (request){
-    case "GET":
-        if (tokens[1] == "messages" && tokens.Length == 3){
-            //send specific message
-            if (messages.Count > Int32.Parse(tokens[2])){
-                response = "SPECIFIC MESSAGE on: " + tokens[2] + ": \n" + messages[Int32.Parse(tokens[2])];
-            }else{
-                response = "Print not possible - Message ID does not exist!";
-            }
-        }else if (tokens[1] == "messages" && tokens.Length <= 2){
-            //send all message
-            string allMsg = "";
-            int counter = 0;
-            foreach (string x in messages){
-                allMsg += counter + ": " + x +  "\n";
-                counter++;
-            }
-            response = "ALL MESSAGES:\n " + allMsg;
-        } else{
-            response = "ERROR - Wrong number of arguments!";
-        }
-        break;
-
-    case "PUT":
-        if (tokens[1] == "messages" && tokens.Length == 3){
-            if (messages.Count > Int32.Parse(tokens[2])){
-                //change message
-                int rowcounter = SearchDataRow(messageLines);
-                string addMessage = AddMessage(rowcounter,messageLines);
-
-                messages[Int32.Parse(tokens[2])] = addMessage;
-                response = "Changed " + tokens[2] + ": " + addMessage;
-            }else{
-                response = "Change not possible - Message ID does not exist!";
-            }
-        }else{
-            response = "ERROR - Wrong number of arguments!";
-        }
-        break;
-
-    case "DELETE":
-        if (tokens[1] == "messages" && tokens.Length == 3){
-            if (messages.Count > Int32.Parse(tokens[2])){
-                //delete specific message
-                messages.RemoveAt(Int32.Parse(tokens[2]));
-                response = "Deleted " + tokens[2];
-            }else{
-                response = "Change not possible - Message ID does not exist!";
-            }
-        }else{
-            response = "ERROR - Wrong number of arguments!";
-        }
-        break;
-
-    case "POST":
-        if (tokens[1] == "messages" && tokens.Length <= 2){
-            //add message from Payload
-            int rowcounter = SearchDataRow(messageLines);
-            string addMessage = AddMessage(rowcounter, messageLines);
-
-            messages.Add(addMessage);
-            response += "Added: " + addMessage + " To ID: " + (messages.Count - 1);
-
-        }else{
-            response = "ERROR - Wrong number of arguments!";
-        }
-        break;
-
-    default:
-        response = "ERROR";
-        break;
-}*/

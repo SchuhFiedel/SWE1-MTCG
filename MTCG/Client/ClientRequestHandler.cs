@@ -74,6 +74,7 @@ namespace Client
                     break;
 
                 case 4: // Update User Info
+                    //DONE
                     reqType = "PUT";
                     path += "users";
                     string bio = "-";
@@ -110,6 +111,7 @@ namespace Client
                     break;
 
                 case 5: // Buy More Coins
+                    //DONE
                     reqType = "POST";
                     path += "transactions/coins";
                     string coins = "0";
@@ -129,7 +131,21 @@ namespace Client
                     break;
                 
                 case 6: // Buy Card  Packs
-//To-DO
+                    //DONE
+                    reqType = "POST";
+                    path += "transactions/packages";
+
+                    Console.WriteLine("Please Enter the PackageID of the package you want to buy");
+                    tmp = "-1";
+                    int tempo = 0;
+                    do {
+                        Console.Write("Package ID < ");
+                        tmp = Console.ReadLine();
+                    } while (tmp == "-1" || tmp == "" || tmp == "0" || !Int32.TryParse(tmp, out tempo));
+
+                    message = "{\n" +
+                              "\"PackageID\": \"" + tmp + "\"\n" +
+                              "}";
                     break;
 
                 case 7: // Show All Owned Cards
