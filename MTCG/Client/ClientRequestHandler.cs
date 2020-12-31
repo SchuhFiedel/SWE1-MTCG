@@ -188,7 +188,10 @@ namespace Client
 //TO-DO
                     break;
                 case 12: // Battle Handler
-//TO-DO
+                         //TO-DO
+                    reqType = "POST";
+                    path += "battle";
+
                     break;
             }
 

@@ -241,6 +241,56 @@ namespace MTCG.Util
 
         }
 
+        public User GetUser(int userID)
+        {
+            NpgsqlConnection connection = SetConnect();
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM usertable WHERE user_id = @a;", connection);
+            cmd.Parameters.AddWithValue("a", userID);
+            //cmd.Parameters.AddWithValue("b", pwd);
+            cmd.Prepare();
+
+            NpgsqlDataReader reader = cmd.ExecuteReader();
+
+            User user = null;
+
+            if (reader.HasRows)
+            {
+                reader.Read();
+                Console.WriteLine(reader.GetPostgresType(0));
+                if (reader.IsDBNull(6) && reader.IsDBNull(7))
+                {
+                    user = new User(reader.GetString(1), reader.GetString(2), "", "",
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9));
+                }
+                else if (reader.IsDBNull(6))
+                {
+                    user = new User(reader.GetString(1), reader.GetString(2), "", reader.GetString(7),
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9));
+                }
+                else if (reader.IsDBNull(7))
+                {
+                    user = new User(reader.GetString(1), reader.GetString(2), reader.GetString(6), "",
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9));
+                }
+                else
+                {
+                    user = new User(reader.GetString(1), reader.GetString(2), reader.GetString(6), reader.GetString(7),
+                                         reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(8), reader.GetInt32(9));
+                }
+
+                reader.Close();
+                connection.Close();
+                return user;
+            }
+            else
+            {
+                reader.Close();
+                connection.Close();
+                throw new ArgumentException("User data not found!");
+            }
+
+        }
+
         /* BEISPIEL FÜR SPEICHERUNG (OHNE SQL INJECTION MÖGLIcHKEIT)
         public void InsertError()
         {
@@ -336,5 +386,72 @@ namespace MTCG.Util
 
             return cardIDs;
         }
+
+        public bool DeckFull(int userID)
+        {
+            NpgsqlConnection connection = SetConnect();
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT count(*) FROM carddecks " +
+                                                  "WHERE user_id = @a;", connection);
+
+            cmd.Parameters.AddWithValue("a", userID);
+            cmd.Prepare();
+            NpgsqlDataReader reader = cmd.ExecuteReader();
+            int numberOfCards = 0;
+
+            while (reader.Read())
+            {
+                numberOfCards = reader.GetInt32(0);
+            }
+            if(numberOfCards == 4)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void DeductElo(int deduction, int userID)
+        {
+            NpgsqlConnection connection = SetConnect();
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT elo from usertable WHERE user_id = @u", connection);
+            cmd.Parameters.AddWithValue("@u", userID);
+
+            cmd.Prepare();
+            NpgsqlDataReader reader =  cmd.ExecuteReader();
+
+            reader.Read();
+
+            int elo = reader.GetInt32(0);
+        
+            connection.Close();
+
+            if(elo-deduction <=0)
+            {
+                deduction = elo;
+            }
+
+            connection = SetConnect();
+            cmd = new NpgsqlCommand("UPDATE usertable SET elo = elo - @ded WHERE user_id = @u", connection);
+            cmd.Parameters.AddWithValue("@ded", deduction);
+            cmd.Parameters.AddWithValue("@u", userID);
+
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+
+            connection.Close();
+        }
+
+        public void AddElo(int amount, int userID)
+        {
+            NpgsqlConnection connection = SetConnect();
+            NpgsqlCommand cmd = new NpgsqlCommand("UPDATE usertable SET elo = elo + @ded WHERE user_id = @u", connection);
+            cmd.Parameters.AddWithValue("@ded", amount);
+            cmd.Parameters.AddWithValue("@u", userID);
+
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+
+            connection.Close();
+        }
+
     }
 }

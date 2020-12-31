@@ -28,11 +28,14 @@ namespace Client
             do
             {
                 PrintMenu(loggedIn);
-                input = Int32.Parse(Console.ReadLine());
-                if(loggedIn == false && input > 2 && input != 20)
+                if(input != 12) //input is automatically set to 12 if in battle mode
                 {
-                    Console.WriteLine("Please Log in or Register First!");
-                    input = 0;
+                    input = Int32.Parse(Console.ReadLine());
+                    if (loggedIn == false && input > 2 && input != 20)
+                    {
+                        Console.WriteLine("Please Log in or Register First!");
+                        input = 0;
+                    }
                 }
                 switch (input)
                 {
@@ -91,6 +94,8 @@ namespace Client
                         break;
                     case 12:
                         //TO-DO go to matchmaking and fight = POST battles
+                        Console.WriteLine("Start Battle");
+                        httpHandler.HttpRequest(12, uri, stream, authenticationToken, loggedIn);
                         break;
                     case 20:
                         Console.WriteLine("Logout And Close Program");
@@ -122,7 +127,14 @@ namespace Client
                         loggedIn = auth.Item1;
                         authenticationToken = auth.Item2;
                     }
-                    
+                    if (InBattleMode(allData.Item2))
+                    {
+                        input = 12;
+                    }
+                    else
+                    {
+                        input = 0;
+                    }
 
                     Console.WriteLine("Received:\n{0} \n\n", response);
                     //Thread.Sleep(2);
@@ -189,6 +201,7 @@ namespace Client
             return Headers;
         }
 
+        //set  authentication Token which is received from the server
         private static Tuple<bool,string> CheckAuthenticationData(string info)
         {
             info = RemoveUnnecessaryChars(info);
@@ -232,6 +245,20 @@ namespace Client
             Console.WriteLine("\n");
         }
 
-        
+        public static bool InBattleMode(string info)
+        {
+            info = RemoveUnnecessaryChars(info);
+            string[] attr = info.Split(',');
+
+            bool success = false;
+            for (int i = 0; i < attr.Length; i++)
+            {
+                string[] rowinfo = attr[i].Split(':');
+                if (rowinfo[0] == "Matchmaking" && rowinfo[1] != "Unsuccessful") { success = true; }
+                if (rowinfo[0] == "Battle" && rowinfo[1] != "Over") { success = false; }
+            }
+
+            return success;
+        }
     }
 }

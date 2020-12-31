@@ -65,7 +65,7 @@ namespace MTCG.Cards
 
 
         //other functions
-        public Card Attack(Card other)
+        public Card Attack(ref Card other)
         {
             Console.WriteLine(this.GetCardName() + " is Attacking: " + other.GetCardName());
             other.TakeDamage(this);
@@ -77,21 +77,22 @@ namespace MTCG.Cards
         {
             double remAP = attacker.GetAP(); // remaining Attack Points
 
-
             remAP = CheckBuffs(remAP, attacker);
-
 
             // Dont deduct attack points because its piercing damage
             if (attacker.GetPiercing() == false){
                 //DEFENDING ACTION -- deduct dp from ap
                 (this.defensePoints, remAP) = this.Defend((int)remAP, this.defensePoints);
-            } 
+            }
 
+            Console.WriteLine(this.cardName + " takes " + remAP.ToString() + " Dmg!");
             int HP = this.healthPoints - (int)remAP;
+            
 
             //if HP <  0 set to 0 else set Card.Healthpoints to HP
             if (HP <= 0){this.healthPoints = 0;}
             else{this.healthPoints = HP;}
+            Console.WriteLine(this.cardName + " remaining HP: " + this.healthPoints.ToString()+"!");
         }
 
         //DEFENDING ACTION -- deduct dp from ap

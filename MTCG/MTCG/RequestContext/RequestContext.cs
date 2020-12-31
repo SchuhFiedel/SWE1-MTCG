@@ -12,10 +12,10 @@ namespace MTCG.Server
     public class RequestContext
     {
         PostgreSqlClass DB = new PostgreSqlClass();
-        User user = new User();
+        public User user = null;
         string authentication = "";
 
-        public Tuple<string, string> Context(string data, List<string> messages)
+        public Tuple<string, string> Context(string data, out int userIDMatchmake, out int instanceUserID)
         {
             //processing data
             string[] messageLines = data.Split('\n');
@@ -33,6 +33,8 @@ namespace MTCG.Server
                                                           "\"Connection\": \"Closed\",\n" +
                                                           "\"Error\": \"Input\"\n" +
                                                           "}", "EXIT");
+            instanceUserID = 0;
+            userIDMatchmake = 0;
 
             switch (tokens[1])
             {
@@ -51,6 +53,7 @@ namespace MTCG.Server
                             //Send back all user information 
                             if (CheckAuthenticity(headers))
                             {
+                                user = DB.GetUser(user.user_id);
                                 response = Tuple.Create(GetUserInfo(user), "ALIVE");
                             }else
                             {
@@ -241,12 +244,46 @@ namespace MTCG.Server
                     //show all tradings = GET tradings; trade = POST tradings, delete deal = DELETE tradings/tradeID
                     break;
                 case "battle":
-//TO-DO HIGH
+                    //DONE
                     //go to matchmaking and fight = POST battles
+                    switch (request)
+                    {
+                        case "POST":
+                            if (CheckAuthenticity(headers))
+                            {
+                                if (DB.DeckFull(user.user_id))
+                                {
+                                    userIDMatchmake = user.user_id;
+                                    response = Tuple.Create("{\n" +
+                                                            "\"Matchmaking\": \"Started\"\n" +
+                                                            "}", "MATCH");
+                                }
+                                else
+                                {
+                                    response = Tuple.Create("{\n" +
+                                                            "\"Matchmaking\": \"Unsuccessful\",\n" +
+                                                            "\"Error\": \"Deck not full\"\n" +
+                                                            "}", "ALIVE");
+                                }
+                            }
+                            else
+                            {
+                                response = Tuple.Create("{\n" +
+                                                        "\"Query\": \"Unsuccessful\",\n" +
+                                                        "\"Error\": \"WrongToken\"\n" +
+                                                        "}", "EXIT");
+                            }
+                            break;
+                    }
+
                     break;
                 default:
 
                     break;
+            }
+            if (user.user_id >0)
+            {
+                instanceUserID = user.user_id;
             }
             return response;
         }
