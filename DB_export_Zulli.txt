@@ -1,0 +1,506 @@
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 208 (class 1259 OID 16524)
+-- Name: carddecks; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.carddecks (
+    user_id integer NOT NULL,
+    card_id integer NOT NULL
+);
+
+
+ALTER TABLE public.carddecks OWNER TO postgres;
+
+--
+-- TOC entry 201 (class 1259 OID 16433)
+-- Name: cards; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cards (
+    i_cid integer NOT NULL,
+    c_cardname character varying(20) NOT NULL,
+    c_cardinfo text,
+    b_cardtype boolean NOT NULL,
+    i_elementtype integer NOT NULL,
+    i_specialtype integer NOT NULL,
+    i_maxhp integer NOT NULL,
+    i_maxap integer NOT NULL,
+    i_maxdp integer NOT NULL,
+    b_piercing boolean NOT NULL
+);
+
+
+ALTER TABLE public.cards OWNER TO postgres;
+
+--
+-- TOC entry 200 (class 1259 OID 16431)
+-- Name: cards_i_cid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cards_i_cid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cards_i_cid_seq OWNER TO postgres;
+
+--
+-- TOC entry 3049 (class 0 OID 0)
+-- Dependencies: 200
+-- Name: cards_i_cid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cards_i_cid_seq OWNED BY public.cards.i_cid;
+
+
+--
+-- TOC entry 206 (class 1259 OID 16507)
+-- Name: cardstacks; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cardstacks (
+    stack_id integer NOT NULL,
+    user_id integer NOT NULL,
+    card_id integer NOT NULL
+);
+
+
+ALTER TABLE public.cardstacks OWNER TO postgres;
+
+--
+-- TOC entry 207 (class 1259 OID 16522)
+-- Name: cardstacks_stack_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.cardstacks ALTER COLUMN stack_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.cardstacks_stack_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 0
+    MAXVALUE 27000
+    CACHE 5
+);
+
+
+--
+-- TOC entry 209 (class 1259 OID 16541)
+-- Name: packages; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.packages (
+    pack_id integer NOT NULL,
+    card_id integer NOT NULL
+);
+
+
+ALTER TABLE public.packages OWNER TO postgres;
+
+--
+-- TOC entry 203 (class 1259 OID 16465)
+-- Name: usertable; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.usertable (
+    user_id integer NOT NULL,
+    username text NOT NULL,
+    password text NOT NULL,
+    coins integer NOT NULL,
+    elo integer NOT NULL,
+    num_games integer NOT NULL,
+    bio character varying(30),
+    image character varying(30),
+    loss integer,
+    win integer
+);
+
+
+ALTER TABLE public.usertable OWNER TO postgres;
+
+--
+-- TOC entry 202 (class 1259 OID 16463)
+-- Name: usertable_user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.usertable_user_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.usertable_user_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3050 (class 0 OID 0)
+-- Dependencies: 202
+-- Name: usertable_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.usertable_user_id_seq OWNED BY public.usertable.user_id;
+
+
+--
+-- TOC entry 205 (class 1259 OID 16493)
+-- Name: validtokens; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.validtokens (
+    token_id integer NOT NULL,
+    token text NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+ALTER TABLE public.validtokens OWNER TO postgres;
+
+--
+-- TOC entry 204 (class 1259 OID 16491)
+-- Name: validtokens_token_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.validtokens_token_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.validtokens_token_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3051 (class 0 OID 0)
+-- Dependencies: 204
+-- Name: validtokens_token_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.validtokens_token_id_seq OWNED BY public.validtokens.token_id;
+
+
+--
+-- TOC entry 2879 (class 2604 OID 16436)
+-- Name: cards i_cid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cards ALTER COLUMN i_cid SET DEFAULT nextval('public.cards_i_cid_seq'::regclass);
+
+
+--
+-- TOC entry 2880 (class 2604 OID 16468)
+-- Name: usertable user_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.usertable ALTER COLUMN user_id SET DEFAULT nextval('public.usertable_user_id_seq'::regclass);
+
+
+--
+-- TOC entry 2881 (class 2604 OID 16496)
+-- Name: validtokens token_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.validtokens ALTER COLUMN token_id SET DEFAULT nextval('public.validtokens_token_id_seq'::regclass);
+
+
+--
+-- TOC entry 3040 (class 0 OID 16524)
+-- Dependencies: 208
+-- Data for Name: carddecks; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.carddecks (user_id, card_id) VALUES (1, 2);
+INSERT INTO public.carddecks (user_id, card_id) VALUES (1, 3);
+INSERT INTO public.carddecks (user_id, card_id) VALUES (4, 3);
+INSERT INTO public.carddecks (user_id, card_id) VALUES (4, 2);
+INSERT INTO public.carddecks (user_id, card_id) VALUES (6, 1);
+INSERT INTO public.carddecks (user_id, card_id) VALUES (6, 2);
+INSERT INTO public.carddecks (user_id, card_id) VALUES (6, 3);
+INSERT INTO public.carddecks (user_id, card_id) VALUES (6, 4);
+INSERT INTO public.carddecks (user_id, card_id) VALUES (1, 7);
+INSERT INTO public.carddecks (user_id, card_id) VALUES (1, 16);
+INSERT INTO public.carddecks (user_id, card_id) VALUES (4, 8);
+INSERT INTO public.carddecks (user_id, card_id) VALUES (4, 9);
+
+
+--
+-- TOC entry 3033 (class 0 OID 16433)
+-- Dependencies: 201
+-- Data for Name: cards; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (1, 'Hurricane', 'Create a huge Hurricane wind storm which destroys everything in its way.', false, 5, 0, 0, 20, 0, false);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (3, 'Hrogarth The Green', 'Hrogarth The Green is one of the best wizzards of the northern lowlands. He would never stray from his path even if his life is threatened.', true, 4, 4, 20, 30, 5, true);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (4, 'Fireball', 'A mighty fireball from the heavens.', false, 1, 0, 0, 15, 0, false);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (2, 'Hransig', 'Hransig the Ork will swing his black iron mace at everyone who stands in his way.', true, 0, 5, 25, 5, 10, false);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (5, 'Asghoul', 'Asghoul the mighty ward of the drang canyon in the mighty deserts of Morrow.', true, 6, 1, 35, 15, 0, false);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (7, 'Rangnar', 'Rangnar - The funny goblin you call when you throw a party, he always carries around his dagger.', true, 4, 2, 10, 10, 0, true);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (8, 'Gunnar', 'Gunnar aspires to one day be a mighty knight, until then he will go on every adventure that promises him glory.', true, 0, 3, 20, 15, 10, false);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (9, 'Gravoshar', 'Gravoshar the kraken is the bigges being living so far north that almost noone has ever seen them. They fill our Legends with fear.', true, 3, 6, 35, 25, 0, false);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (10, 'Arnold', 'Arnold, the guy from the other dimension has guns and other stuff to throw at everybody.', true, 1, 0, 15, 10, 5, false);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (11, 'Ice Shards', 'A storm of sharp ice, warped in from a portal from a paralell dimension.', false, 3, 0, 0, 25, 0, true);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (12, 'Flyring Rock', 'Raise a huge rock and hurl it towards your enemy.', false, 4, 0, 0, 20, 0, false);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (13, 'Hurdy Gurdy', 'Hurdy the fire elf got his nick name from the instrument he always carries around. The horrific screeching can sometimes even be helpful', true, 5, 7, 10, 10, 5, true);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (14, 'Munnel', 'Munnel the trapper knows how to kill his prey. After working as a trapper he got bored and went on adventures.', true, 0, 0, 20, 25, 10, false);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (15, 'Grant', 'Grant the wizzard apprentice still has a lot to lear, but he insits on traveling the world and see all its magical creatures.', true, 6, 4, 15, 10, 0, false);
+INSERT INTO public.cards (i_cid, c_cardname, c_cardinfo, b_cardtype, i_elementtype, i_specialtype, i_maxhp, i_maxap, i_maxdp, b_piercing) VALUES (16, 'Morpheos', 'Morpheos is the highest knight of the King of Junra and always here to help.', true, 0, 3, 25, 25, 10, false);
+
+
+--
+-- TOC entry 3038 (class 0 OID 16507)
+-- Dependencies: 206
+-- Data for Name: cardstacks; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (1, 1, 1);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (3, 1, 2);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (4, 1, 3);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (5, 1, 4);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (11, 1, 5);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (16, 6, 1);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (21, 6, 2);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (26, 6, 3);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (31, 6, 5);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (36, 6, 4);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (41, 4, 1);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (46, 4, 2);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (51, 4, 3);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (56, 4, 5);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (61, 4, 4);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (66, 1, 7);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (71, 1, 8);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (76, 1, 9);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (81, 1, 10);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (86, 1, 11);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (91, 4, 12);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (96, 4, 13);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (101, 4, 14);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (106, 4, 15);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (111, 4, 16);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (116, 4, 7);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (121, 4, 8);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (126, 4, 9);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (131, 4, 10);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (136, 4, 11);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (141, 1, 12);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (146, 1, 13);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (151, 1, 14);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (156, 1, 15);
+INSERT INTO public.cardstacks (stack_id, user_id, card_id) OVERRIDING SYSTEM VALUE VALUES (161, 1, 16);
+
+
+--
+-- TOC entry 3041 (class 0 OID 16541)
+-- Dependencies: 209
+-- Data for Name: packages; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.packages (pack_id, card_id) VALUES (1, 1);
+INSERT INTO public.packages (pack_id, card_id) VALUES (1, 2);
+INSERT INTO public.packages (pack_id, card_id) VALUES (1, 3);
+INSERT INTO public.packages (pack_id, card_id) VALUES (1, 5);
+INSERT INTO public.packages (pack_id, card_id) VALUES (1, 4);
+INSERT INTO public.packages (pack_id, card_id) VALUES (2, 7);
+INSERT INTO public.packages (pack_id, card_id) VALUES (2, 8);
+INSERT INTO public.packages (pack_id, card_id) VALUES (2, 9);
+INSERT INTO public.packages (pack_id, card_id) VALUES (2, 10);
+INSERT INTO public.packages (pack_id, card_id) VALUES (2, 11);
+INSERT INTO public.packages (pack_id, card_id) VALUES (3, 12);
+INSERT INTO public.packages (pack_id, card_id) VALUES (3, 13);
+INSERT INTO public.packages (pack_id, card_id) VALUES (3, 14);
+INSERT INTO public.packages (pack_id, card_id) VALUES (3, 15);
+INSERT INTO public.packages (pack_id, card_id) VALUES (3, 16);
+
+
+--
+-- TOC entry 3035 (class 0 OID 16465)
+-- Dependencies: 203
+-- Data for Name: usertable; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.usertable (user_id, username, password, coins, elo, num_games, bio, image, loss, win) VALUES (2, 'CCCCC', 'CCCCC', 20, 0, 0, 'Wer??', '0_o', 0, 0);
+INSERT INTO public.usertable (user_id, username, password, coins, elo, num_games, bio, image, loss, win) VALUES (3, 'Brudi1', 'Brudi1', 20, 0, 0, 'Wer??', '0_o', 0, 0);
+INSERT INTO public.usertable (user_id, username, password, coins, elo, num_games, bio, image, loss, win) VALUES (17, 'afafaf', 'afafaf', 20, 0, 0, 'Wer??', '0_o', 0, 0);
+INSERT INTO public.usertable (user_id, username, password, coins, elo, num_games, bio, image, loss, win) VALUES (21, 'Brrr', 'Brrr', 20, 3, 0, 'Wer??', '0_o', 0, 0);
+INSERT INTO public.usertable (user_id, username, password, coins, elo, num_games, bio, image, loss, win) VALUES (24, 'bababa', 'bababa', 20, 0, 0, NULL, NULL, 0, 0);
+INSERT INTO public.usertable (user_id, username, password, coins, elo, num_games, bio, image, loss, win) VALUES (6, 'Apple', 'Apple', 60, 0, 0, 'asd', 'B-)', 0, 0);
+INSERT INTO public.usertable (user_id, username, password, coins, elo, num_games, bio, image, loss, win) VALUES (1, 'MMMMM', 'MMMMM', 0, 3, 1, 'AAAAbbb', '0_o', 0, 1);
+INSERT INTO public.usertable (user_id, username, password, coins, elo, num_games, bio, image, loss, win) VALUES (4, 'Herold25', 'Herold25', 5, 25, 2, 'Wer??', '0_o', 1, 1);
+
+
+--
+-- TOC entry 3037 (class 0 OID 16493)
+-- Dependencies: 205
+-- Data for Name: validtokens; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3052 (class 0 OID 0)
+-- Dependencies: 200
+-- Name: cards_i_cid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cards_i_cid_seq', 16, true);
+
+
+--
+-- TOC entry 3053 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: cardstacks_stack_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cardstacks_stack_id_seq', 365, true);
+
+
+--
+-- TOC entry 3054 (class 0 OID 0)
+-- Dependencies: 202
+-- Name: usertable_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.usertable_user_id_seq', 36, true);
+
+
+--
+-- TOC entry 3055 (class 0 OID 0)
+-- Dependencies: 204
+-- Name: validtokens_token_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.validtokens_token_id_seq', 256, true);
+
+
+--
+-- TOC entry 2893 (class 2606 OID 16528)
+-- Name: carddecks carddecks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.carddecks
+    ADD CONSTRAINT carddecks_pkey PRIMARY KEY (user_id, card_id);
+
+
+--
+-- TOC entry 2883 (class 2606 OID 16449)
+-- Name: cards cards_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cards
+    ADD CONSTRAINT cards_pkey PRIMARY KEY (i_cid);
+
+
+--
+-- TOC entry 2891 (class 2606 OID 16511)
+-- Name: cardstacks cardstacks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cardstacks
+    ADD CONSTRAINT cardstacks_pkey PRIMARY KEY (stack_id);
+
+
+--
+-- TOC entry 2895 (class 2606 OID 16545)
+-- Name: packages packages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.packages
+    ADD CONSTRAINT packages_pkey PRIMARY KEY (pack_id, card_id);
+
+
+--
+-- TOC entry 2885 (class 2606 OID 16473)
+-- Name: usertable usertable_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.usertable
+    ADD CONSTRAINT usertable_pkey PRIMARY KEY (user_id);
+
+
+--
+-- TOC entry 2887 (class 2606 OID 16475)
+-- Name: usertable usertable_username_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.usertable
+    ADD CONSTRAINT usertable_username_key UNIQUE (username);
+
+
+--
+-- TOC entry 2889 (class 2606 OID 16501)
+-- Name: validtokens validtokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.validtokens
+    ADD CONSTRAINT validtokens_pkey PRIMARY KEY (token_id);
+
+
+--
+-- TOC entry 2900 (class 2606 OID 16534)
+-- Name: carddecks carddecks_card_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.carddecks
+    ADD CONSTRAINT carddecks_card_id_fkey FOREIGN KEY (card_id) REFERENCES public.cards(i_cid);
+
+
+--
+-- TOC entry 2899 (class 2606 OID 16529)
+-- Name: carddecks carddecks_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.carddecks
+    ADD CONSTRAINT carddecks_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.usertable(user_id);
+
+
+--
+-- TOC entry 2898 (class 2606 OID 16517)
+-- Name: cardstacks cardstacks_card_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cardstacks
+    ADD CONSTRAINT cardstacks_card_id_fkey FOREIGN KEY (card_id) REFERENCES public.cards(i_cid);
+
+
+--
+-- TOC entry 2897 (class 2606 OID 16512)
+-- Name: cardstacks cardstacks_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cardstacks
+    ADD CONSTRAINT cardstacks_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.usertable(user_id);
+
+
+--
+-- TOC entry 2901 (class 2606 OID 16546)
+-- Name: packages packages_card_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.packages
+    ADD CONSTRAINT packages_card_id_fkey FOREIGN KEY (card_id) REFERENCES public.cards(i_cid);
+
+
+--
+-- TOC entry 2896 (class 2606 OID 16502)
+-- Name: validtokens validtokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.validtokens
+    ADD CONSTRAINT validtokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.usertable(user_id);
+
+
+-- Completed on 2021-01-01 17:44:36
+
+--
+-- PostgreSQL database dump complete
+--
+

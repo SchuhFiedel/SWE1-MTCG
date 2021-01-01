@@ -1,0 +1,20 @@
+if19b183 Maximiliano Zulli bif3C1
+
+--- Wie wichtig ist eurer Meinung nach eine gute DB-Struktur für das Monster Trading Card Game? 
+Ich persönlich hatte nämlich recht große Schwierigkeiten mit PosgreSQL und der NpgSQL Klasse 
+und deren Funktionen beim programmieren.
+
+--- Gibt es in C# einen guten Weg um Informationen zwischen Threads auszutauschen, ohne Pointer zu verwenden?
+Ich habe nämlich, vor allem als ich dann schlussendlich zum Programmieren des Battlehandlers gekommen bin ein
+großes Problem damit auf Daten über References zwischen den Threads zuzugreifen und habe es bis jetzt leider 
+nicht geschafft alle Buggs zu finden und zu verstehen. Dafür war mir die Zeit leider zu kurz.
+
+
+Ist zwar keine Frage aber ich wollte das mal hier anbringen ^^
+--- Ich hatte schon sehr früh mit dem Programmieren selbst angefangen und hatte dann wie sich am ende herrausgestellt hat,
+dadurch viele Probleme. Die Planung ist auch immer nur Meilensteinweise passiert, so dass ich alles ausprogrammiert hatte
+außer das Battle und Matchmaking. Da ist mir dann aufgefallen das meine gesamte Programmstruktur bis dahin nicht gut mit 
+dem Battle selbst zu verbinden ist. 
+Was wäre euer Tipp damit mit das vielleicht in der Zukunft nicht mehr passert?^^
+
+Ich hoffe ihr habt/hattet schöne Feiertage!
