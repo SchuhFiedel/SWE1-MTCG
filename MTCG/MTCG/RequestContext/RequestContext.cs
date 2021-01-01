@@ -281,7 +281,7 @@ namespace MTCG.Server
 
                     break;
             }
-            if (user.user_id >0)
+            if (user != null && user.user_id >0)
             {
                 instanceUserID = user.user_id;
             }
