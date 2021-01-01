@@ -28,7 +28,6 @@ namespace MTCG
             List<Card> playerTwoTable = new List<Card>();
             User playerOne = null;
             User playerTwo = null;
-            
         }
 
         public void PrepareBattle(ref FightingTupleWrapper fighting, ref MatchmakingListWrapper userIDsForMatchmaking)
@@ -197,6 +196,10 @@ namespace MTCG
                     PostgreSqlClass DB = new PostgreSqlClass();
                     DB.AddElo(3, playerOne.user_id);
                     DB.DeductElo(5, playerTwo.user_id);
+                    DB.Insert("UPDATE usertable SET num_games = num_games + 1 WHERE user_id=" + playerOne.user_id + ";");
+                    DB.Insert("UPDATE usertable SET num_games = num_games + 1 WHERE user_id=" + playerTwo.user_id + ";");
+                    DB.Insert("UPDATE usertable SET loss = loss + 1 WHERE user_id = " + playerTwo.user_id+";");
+                    DB.Insert("UPDATE usertable SET win = win + 1 WHERE user_id = " + playerOne.user_id + ";");
                 }
                 else if ((playerTwoHand.Count == 0 && playerTwoTable.Count == 0) && (playerOneHand.Count > 0 || playerOneTable.Count > 0))
                 {
@@ -207,12 +210,19 @@ namespace MTCG
                     PostgreSqlClass DB = new PostgreSqlClass();
                     DB.AddElo(3, playerTwo.user_id);
                     DB.DeductElo(5, playerOne.user_id);
+                    DB.Insert("UPDATE usertable SET num_games = num_games + 1 WHERE user_id=" + playerOne.user_id + ";");
+                    DB.Insert("UPDATE usertable SET num_games = num_games + 1 WHERE user_id=" + playerTwo.user_id + ";");
+                    DB.Insert("UPDATE usertable SET loss = loss + 1 WHERE user_id = " + playerOne.user_id + ";");
+                    DB.Insert("UPDATE usertable SET win = win + 1 WHERE user_id = " + playerTwo.user_id + ";");
                 }
                 else if (numberOfRounds > 100 || (playerTwoHand.Count == 0 && playerOneHand.Count == 0 && CheckForSpells()))
                 {
                     //Draw
                     retVal = Tuple.Create(playerOne.user_id, playerTwo.user_id, true);
                     Console.WriteLine("DRAW!!");
+                    PostgreSqlClass DB = new PostgreSqlClass();
+                    DB.Insert("UPDATE usertable SET num_games = num_games + 1 WHERE user_id=" + playerOne.user_id + ";");
+                    DB.Insert("UPDATE usertable SET num_games = num_games + 1 WHERE user_id=" + playerTwo.user_id + ";");
                     end = true;
                 }
                 Console.ResetColor();

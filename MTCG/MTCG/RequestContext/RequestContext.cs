@@ -727,6 +727,9 @@ namespace MTCG.Server
                 if(userList[i].win != 0 && userList[i].loss != 0)
                 {
                     winLoss = userList[i].win / userList[i].loss;
+                }else if(userList[i].win != 0 && userList[i].loss == 0)
+                {
+                    winLoss = userList[i].win;
                 }
 
 
@@ -736,7 +739,9 @@ namespace MTCG.Server
                     "\"Username\": \"" + userList[i].username + "\",\n"+
                     "\"Elo\": \"" + userList[i].elo + "\",\n" +
                     "\"NumGames\": \"" + userList[i].num_games + "\",\n" +
-                    "\"WinLoss\": \"" + winLoss + "\"\n";
+                    "\"WinLoss\": \"" + winLoss + "\",\n" +
+                    "\"Win\": \"" + userList[i].win + "\",\n" +
+                    "\"Loss\": \"" + userList[i].loss + "\"\n";
                 if (i + 1 <= userList.Count)
                     score += "},\n";
             }

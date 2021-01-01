@@ -68,15 +68,16 @@ namespace Client
             ReadStream(ref input);
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Authentication Token set to:" + authentication + "!");
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
 
             //Get User Info
+
             Console.WriteLine("Get User Info for:" + username + " " + password + "!");
             Console.ResetColor();
             sendInfo = GetUserInfo();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
 
             //Update User Info
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -94,7 +95,7 @@ namespace Client
             sendInfo = GetUserInfo();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
 
             //Buy More Coins
             string amount = "40";
@@ -113,7 +114,7 @@ namespace Client
             sendInfo = GetStacK();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
 
             //Buy Cardpack 1
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -140,7 +141,7 @@ namespace Client
             sendInfo = GetStacK();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
 
             //Get Deck 
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -149,7 +150,7 @@ namespace Client
             sendInfo = GetDeck();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
 
             //put Cards into Deck
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -191,7 +192,7 @@ namespace Client
             sendInfo = GetDeck();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
 
             //Get Scoreboard
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -200,7 +201,7 @@ namespace Client
             sendInfo = ScoreBoard();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
 
             //Go into Battle Mode
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -213,7 +214,7 @@ namespace Client
                 ReadStream(ref input);
                 Thread.Sleep(2000);
             } while (input == 12);
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
 
             //Get Scoreboard
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -222,6 +223,7 @@ namespace Client
             sendInfo = ScoreBoard();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
+            Thread.Sleep(3000);
 
             //Logout 
             SendToServer("DELETE", "/sessions", "");
@@ -246,7 +248,7 @@ namespace Client
             ReadStream(ref input);
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Authentication Token set to:" + authentication + "!");
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
 
             //Get User Info
             Console.WriteLine("Get User Info for:" + username + " " + password + "!");
@@ -254,7 +256,7 @@ namespace Client
             sendInfo = GetUserInfo();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
 
             //GET DECK
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -263,7 +265,7 @@ namespace Client
             sendInfo = GetDeck();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
 
             //Get Scoreboard
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -272,7 +274,7 @@ namespace Client
             sendInfo = ScoreBoard();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
-            Thread.Sleep(1000);
+            Thread.Sleep(4000);
 
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Start matchmaking and Battle!");
@@ -284,7 +286,7 @@ namespace Client
                 ReadStream(ref input);
                 Thread.Sleep(2000);
             } while (input == 12);
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
 
             //Get Scoreboard
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -293,6 +295,7 @@ namespace Client
             sendInfo = ScoreBoard();
             SendToServer(sendInfo.Item1, sendInfo.Item2, sendInfo.Item3);
             ReadStream(ref input);
+            Thread.Sleep(3000);
 
             //Logout 
             SendToServer("DELETE", "/sessions", "");
@@ -546,7 +549,7 @@ namespace Client
             // Update User Info
             //DONE
             reqType = "PUT";
-            path += "users";
+            path += "users/";
             string bio = "Hey there I am Noob!";
             string image = "owO";
             string newUsername = "-";
