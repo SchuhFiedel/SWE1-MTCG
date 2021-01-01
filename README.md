@@ -1,7 +1,8 @@
-# SWE1-MTCG
+# SWE1-MTCG by Maximiliano Zulli (BIF3C1 IF19B183)
 Monster Trading Card Game and REST HTTP-based plain-text Webservices
 
 [Hier geht's zur git repo(client/server Branch)](https://github.com/SchuhFiedel/SWE1-MTCG/tree/DevServerClient)
+Meine Zeiterfassung für dieses Projekt befindet sich in folgender Datei: ***MTCG_Zeiterfassung_Zulli.pdf***
 
 In dieser ReadMe Datei befinden sich alle Informationen zu diesem Projekt, die auch Teilweise genau beachtet werden müssen damit es ausgeführt werden kann. Als erstes werden die wesentlichsten Punkte genannt welche für die ausführung des Programmes relevant sind. Danach werden unter anderem das DB-Schema aufgezeigt, Designentscheidungen, Probleme und weitere Informationen über das Projekt generell.
 Ich habe mich für dieses Projekt entschieden einen eigenen Integration Test inform zweier Demo Modes in meinem Client Programm zu schreiben.
@@ -46,6 +47,16 @@ Protocol
 - Unit Test Design N (keine Unit Tests)
 - Time Spent On Project Y (beiliegendes EXCEL Sheet)
 - Link to GitRepo Y
+
+Additional Features
+- Elo System
+- Wins Losses
+- Win Loss Rate
+- Client with Menu
+- Session Logout
+- Buy Coins
+- Card Descriptions
+- Extra ElementTypes
 
 ## Design 
 ### Server
@@ -113,20 +124,35 @@ Wenn ein User sich angemeldet hat werden ihm Folgende Funktionen freigeschalten 
 - Kampf-Modus (Matchmaking)
 - Logout Und Programm Beenden
 
-## Datenbank "Schema"
-usertable:
-Every Colum is set with "NOT NULL" Constraint
-user_id (PK,Int,Serial) | username (Text,Unique) | password (text) | coins(Int) | elo(Int) | num_games(Int)
+### Karten
+Karten haben Folgende Attribute: 
+- CardID
+- CardName
+- CardInfo (Description)
+- CardType (Spell, Monster)
+- ElementType (None, Fire, Water, Ice, Earth, Air, Electro)
+- SpecialType (None, Dragon, Goblin, Knight, Wizzard, Ork, Kraken, FireElf)
+- HealthPoints
+- AttackPoints
+- DefensePoints
+- Piercing (Yes, No)
 
-cards:
+### Datenbank "Schema"
+##### usertable:
+Every Colum is set with "NOT NULL" Constraint
+user_id (PK,Int,Serial) | username (Text,Unique) | password (text) | coins(Int) | elo(Int) | num_games(Int) | bio(varchar(30)) | image(varchar(30)) | loss(int) | win(int)
+
+##### cards:
 i_cid(PK,INT,Serial) | c_cardname(varchar20) | c_cardinfo(text) | b_cardtype(bool) | i_elementtype(Int) | i_specialtype(Int) | i_maxhp(Int) | i_maxdp(int) | b_piercing(bool)
 
-user_cards:
+##### cardstacks:
+stack_id(PK,INT,Serial) | user_id(int, fk) | card_id(int, fk)
 
+##### carddecks:
+user_id(PK, fk, int) | card_id(PK, fk, int)
 
-cardpacks:
+##### packages:
+pack_id(PK, int) | card_id(PK, fk, int)
 
-
-cardpacks_cards:
-
-
+##### validtokens:
+token_id(PK,int) | token(text) | user_id(fk,int)
